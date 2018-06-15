@@ -12,19 +12,32 @@ public class MatrixNd {
 		this.matrix = matrix;
 	}
 	
+	/**
+	 * 
+	 * @param m matrix
+	 * @return multiplication of two matrices
+	 */
 	public MatrixNd multiply(MatrixNd m) {
 		return multiply(m.matrix);
 	}
 	
+	/**
+	 * 
+	 * @param vecN N-dimensional vector
+	 * @return transformed vecN
+	 */
 	public VecNd multiply(VecNd vecN) {
+		//create 1xN matrix
 		double[][] m1 = new double[vecN.xs.length+1][1];
 		for(int i = 0; i < m1.length-1; i++) {
 			m1[i][0] = vecN.xs[i];
 		}
 		m1[m1.length-1][0] = vecN.w0;
 		
+		//Multiply matrices
 		double[][] m = multiply(m1).matrix;
 		
+		//Convert new 1xN matrix to VecNd
 		double[] xs = new double[m.length-1];
 		for(int i = 0; i < xs.length; i++) {
 			xs[i] = m[i][0];
@@ -35,6 +48,11 @@ public class MatrixNd {
 		return vec;
 	}
 	
+	/**
+	 * 
+	 * @param vec4 homogeneous 3D vector 
+	 * @return transformed vector
+	 */
 	public Vec4d multiply(Vec4d vec4) {
 		double[][] m = multiply(new double[][] {
 			{vec4.x},
@@ -45,6 +63,11 @@ public class MatrixNd {
 		return new Vec4d(m[0][0], m[1][0], m[2][0], m[3][0]);
 	}
 
+	/**
+	 * 
+	 * @param m array of matrix values
+	 * @return multiplication
+	 */
 	public MatrixNd multiply(double[][] m) {
 		double[][] result = new double[matrix.length][m[0].length];
 		for(int y = 0; y < m.length; y++) {
@@ -57,6 +80,11 @@ public class MatrixNd {
 		return new MatrixNd(result);
 	}
 	
+	/**
+	 * 
+	 * @param n matrix dimension
+	 * @return nxn identity matrix
+	 */
 	public static MatrixNd ID(int n) {
 		MatrixNd ID = new MatrixNd(new double[n][n]);
 		for(int i = 0; i < n; i++) {

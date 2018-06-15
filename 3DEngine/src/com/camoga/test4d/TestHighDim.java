@@ -11,9 +11,23 @@ import com.camoga.test4d.geom.MatrixNd;
 import com.camoga.test4d.geom.VecNd;
 import com.camoga.test4d.model.NCube;
 import com.camoga.test4d.model.Polytope;
-
+/**
+ * This is an example of a program made using this motor.
+ * The objective of this little program is to optimize the three dimensional shadow
+ * of an hypercube using the shadow theorem.
+ * You can get more information here: <a href="https://www.youtube.com/watch?v=cEhLNS5AHss">Mathologer's Video</a>
+ * 
+ * Most of the code in here can be used to manipulate even higher dimensional polytopes.
+ * However, I've still haven't been able to find a way of calculating the area/volume of a projection; 
+ * so it cannot optimize the volume of a 5-cube, 6-cube, and so on.
+ * 
+ * 
+ * @author MrCamoga
+ *
+ */
 public class TestHighDim extends Engine {
 
+	private static final long serialVersionUID = 1L;
 	Polytope tesseract;
 	Sprite sprite;
 	

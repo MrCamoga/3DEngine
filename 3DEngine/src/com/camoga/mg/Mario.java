@@ -1,6 +1,5 @@
 package com.camoga.mg;
 
-import java.awt.Color;
 import java.awt.Graphics;
 
 import com.camoga.engine.Engine;
@@ -9,8 +8,17 @@ import com.camoga.engine.geom.Vec3;
 import com.camoga.engine.gfx.Screen;
 import com.camoga.engine.model.Polyhedron;
 
+/**
+ * Another example, this one with an icosahedron.
+ * It was intended to be rotating and bouncing on the floor, but I lost all the code!
+ * 
+ * @author MrCamoga
+ *
+ */
 public class Mario extends Engine {
 
+	private static final long serialVersionUID = 1L;
+	
 	public Vec3 gravity = new Vec3(0, 0.05, 0);
 	public Vec3 pos = new Vec3(0, 1, 0);
 	public Vec3 velocity = new Vec3(-0.4, -0.5, 0);

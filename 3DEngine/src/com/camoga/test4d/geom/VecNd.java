@@ -18,6 +18,10 @@ public class VecNd {
 		this.w0 = 1;
 	}
 	
+	/**
+	 * 
+	 * @return modulus of vector
+	 */
 	public double getMagnitud() {
 		double result = 0;
 		for(double x : xs) result += x*x;
@@ -25,6 +29,10 @@ public class VecNd {
 		return Math.sqrt(result);
 	}
 	
+	/**
+	 * 
+	 * @return vector with normalized w0 component
+	 */
 	public VecNd normalize() {
 		for(int i = 0; i < xs.length; i++) {
 			xs[i] /= w0;

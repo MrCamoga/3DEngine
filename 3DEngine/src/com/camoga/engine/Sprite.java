@@ -14,6 +14,14 @@ public class Sprite {
 		load(path);
 	}
 	
+	/**
+	 * 
+	 * Creates a sprite of a solid color
+	 * 
+	 * @param width of the sprite
+	 * @param height of the sprite
+	 * @param color of the sprite
+	 */
 	public Sprite(int width, int height, int color) {
 		this.width = width;
 		this.height = height;
@@ -23,6 +31,10 @@ public class Sprite {
 		}
 	}
 	
+	/**
+	 * load sprite from image file
+	 * @param path of the image file
+	 */
 	public void load(String path) {
 		try {
 			BufferedImage image = ImageIO.read(getClass().getResourceAsStream(path));
@@ -35,6 +47,10 @@ public class Sprite {
 		}
 	}
 	
+	/**
+	 * 
+	 * @return raster of pixels
+	 */
 	public int[] getPixels() {
 		return pixels;
 	}

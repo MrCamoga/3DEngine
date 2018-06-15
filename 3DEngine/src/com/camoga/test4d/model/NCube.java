@@ -9,6 +9,11 @@ public class NCube extends Polytope {
 		this.N = N;
 	}	
 	
+	/**
+	 * 
+	 * @param n dimension
+	 * @return array of texture coordinates for every face on the N-cube
+	 */
 	private static double[][] NdimCubeTC(int n) {
 		double[][] tc = new double[(int) (Math.pow(2, n-2)*Maths.factorial(n)/Maths.factorial(n-2)/Maths.factorial(2))*4][];
 		for(int i = 0; i < tc.length; i+=4) {
@@ -37,6 +42,11 @@ public class NCube extends Polytope {
 		return edges;
 	}
 	
+	/**
+	 * 
+	 * @param n dimension
+	 * @return array of faces of a N-cube
+	 */
 	private static int[][] NdimCubeFaces(int n) {
 		int numOfFaces = (int) (Math.pow(2, n-2)*Maths.factorial(n)/Maths.factorial(n-2)/Maths.factorial(2));
 		int[][] faces = new int[numOfFaces][];
@@ -62,6 +72,11 @@ public class NCube extends Polytope {
 		return faces;
 	}
 	
+	/**
+	 * 
+	 * @param n dimension
+	 * @return array of vertices of a N-Cube
+	 */
 	private static double[][] NdimCubeVertices(int n) {
 		double[][] vertices = new double[(int) Math.pow(2, n)][n];
 		for(int i = 0; i < vertices.length; i++) {

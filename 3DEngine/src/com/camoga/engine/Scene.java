@@ -11,6 +11,12 @@ import com.camoga.engine.model.HollowModel;
 import com.camoga.engine.model.Polyhedron;
 import com.camoga.test4d.model.Polytope;
 
+/**
+ * This class is used to load, transform and pass the models to the renderer
+ * 
+ * @author MrCamoga
+ *
+ */
 public class Scene {
 
 	private Camera cam;
@@ -24,18 +30,34 @@ public class Scene {
 		this.main = main;
 	}
 	
+	/**
+	 * Add a model
+	 * @param model
+	 */
 	public void add(HollowModel model) {
 		hmodels.add(model);
 	}
 	
+	/**
+	 * Add a model
+	 * @param p
+	 */
 	public void add(Polytope p) {
 		polytope.add(p);
 	}
 	
+	/**
+	 * Add a model
+	 * @param model
+	 */
 	public void add(Polyhedron model) {
 		polyhedra.add(model);
 	}
 	
+	/**
+	 * Transforms the vertices of the models according to the camera, position,...
+	 * 
+	 */
 	public void tick() {
 		for(HollowModel m:hmodels) {
 			for(int i = 0; i < m.vertices.size(); i++) {
@@ -62,6 +84,7 @@ public class Scene {
 		}
 	}
 	
+	//TODO use TestHighDim.java methods
 	public Matrix4d rotX(double x) {
 		return new Matrix4d(new double[][]{
 			{1,	0,			0,				0},
@@ -107,6 +130,10 @@ public class Scene {
 		});
 	}
 	
+	/**
+	 * Passes the models to the renderer
+	 * @param g 
+	 */
 	public void render(Graphics g) {
 		for(HollowModel m: hmodels) {
 			main.renderPoint(g,m.transform.toArray(new Vec4d[] {}), m.dotSize, m.color);	

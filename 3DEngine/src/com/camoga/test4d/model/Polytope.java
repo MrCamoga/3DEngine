@@ -1,7 +1,5 @@
 package com.camoga.test4d.model;
 
-import java.awt.Graphics;
-
 import com.camoga.engine.Engine;
 import com.camoga.engine.Sprite;
 import com.camoga.engine.geom.Vec4d;
@@ -47,9 +45,7 @@ public class Polytope {
 	}
 	
 	public void render(Engine main) {
-//		if(textureCoords != null) {
-//			main.renderPolygons(g, transform, faces, textureCoords, sprite);
-//		}
+
 		
 //		main.renderObj(g, transform4d, dotSize, color);
 		if(faces!=null)

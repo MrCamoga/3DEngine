@@ -19,6 +19,12 @@ import com.camoga.engine.gfx.Screen;
 import com.camoga.engine.input.Camera;
 import com.camoga.engine.input.Key;
 
+/**
+ * Main class of the Engine.
+ * Still needs some refactorization and cleaning up
+ * @author usuario
+ *
+ */
 public abstract class Engine extends Canvas implements Runnable {
 
 	public static String TITLE = "3D Engine";
@@ -44,6 +50,7 @@ public abstract class Engine extends Canvas implements Runnable {
 	public Scene scene;
 	public Screen screen;
 	
+	//TODO create Window class
 	public Engine() {
 		frame = new JFrame(TITLE);
 		
@@ -131,8 +138,12 @@ public abstract class Engine extends Canvas implements Runnable {
 		buffer.show();
 	}
 	
-	//draw before rendering the scene (raster)
+	/**
+	 * draw before rendering the scene (raster)
+	 * @param screen Screen object
+	 */
 	public abstract void predraw(Screen screen);
+	
 	/**
 	 * draw after rendering the scene (Graphics)
 	 * @param g
@@ -140,9 +151,17 @@ public abstract class Engine extends Canvas implements Runnable {
 	 */
 	public abstract void postdraw(Graphics g);
 	
-	public void renderPoint(Graphics g, Vec4d[] matrix, double dotSize, int color) {
-		for(int i = 0; i < matrix.length; i++) {
-			Vec4d vec = matrix[i].normalize();
+	//TODO remove random color
+	/**
+	 * projects and renders a set of points onto the screen
+	 * @param g graphics object
+	 * @param vec4s array of vertices
+	 * @param dotSize size of dots (squares)
+	 * @param color color of the dots
+	 */
+	public void renderPoint(Graphics g, Vec4d[] vec4s, double dotSize, int color) {
+		for(int i = 0; i < vec4s.length; i++) {
+			Vec4d vec = vec4s[i].normalize();
 			
 			double Z = vec.z - cam.pos.z;
 			if(Z <= 0) continue;
@@ -155,7 +174,7 @@ public abstract class Engine extends Canvas implements Runnable {
 //			System.out.println(distance);
 			double apparentSize = dotSize/distance;
 			if(apparentSize < 2) apparentSize = 2;
-			screen.drawPoint(xp, yp, (int) Z, (int)apparentSize, (int) (0xff000000 + 0xffffff*(double)i/(double)matrix.length));
+			screen.drawPoint(xp, yp, (int) Z, (int)apparentSize, (int) (0xff000000 + 0xffffff*(double)i/(double)vec4s.length));
 			
 //			Graphics2D g2d = image2.createGraphics();
 //			g2d.setColor(new Color(0xff, 0xff, 0xff, 0xff));
@@ -164,12 +183,20 @@ public abstract class Engine extends Canvas implements Runnable {
 		}
 	}
 	
-	public void renderHollowModel(Vec4d[] matrix, int[][] edges, double lineSize, int color) {
+	//FIXME optimize screen projection, since the same points are projected multiple times
+	/**
+	 * projects and renders a set of edges onto the screen
+	 * @param vec4s array of vertices
+	 * @param edges array of vertices pairs (edges)
+	 * @param lineSize edge thickness
+	 * @param color edge color
+	 */
+	public void renderHollowModel(Vec4d[] vec4s, int[][] edges, double lineSize, int color) {
 		for(int i = 0; i < edges.length; i++) {
 			int[][] pos = new int[2][3];
 			boolean draw = true;
 			for(int j = 0; j < edges[i].length; j++) {
-				Vec4d vec = matrix[edges[i][j]].normalize();
+				Vec4d vec = vec4s[edges[i][j]].normalize();
 				double Z = vec.z - cam.pos.z;
 				if(Z <= 0) {
 					draw = false;
@@ -190,7 +217,9 @@ public abstract class Engine extends Canvas implements Runnable {
 		}
 	}
 	
+	//TODO add method to render polygon with solid color faces
 	/**
+	 * Projects and renders a set of faces onto the screen
 	 * 
 	 * @param vectors array of transformed vertices
 	 * @param faces array of faces to be drawn: int[face][vertices]
@@ -249,6 +278,9 @@ public abstract class Engine extends Canvas implements Runnable {
 //		}
 //	}
 	
+	/**
+	 * creates and runs the thread
+	 */
 	public void start() {
 		if(running) return;
 		running = true;
@@ -256,6 +288,9 @@ public abstract class Engine extends Canvas implements Runnable {
 		thread.start();
 	}
 	
+	/**
+	 * destroys the threadd
+	 */
 	public void stop() {
 		if(!running) return;
 		try {

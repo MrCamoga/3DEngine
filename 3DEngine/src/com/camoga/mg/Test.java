@@ -8,6 +8,17 @@ import com.camoga.engine.gfx.Screen;
 import com.camoga.engine.model.HollowModel;
 import com.camoga.engine.model.Polyhedron;
 
+/**
+ * This is the most simple program that you may do.
+ * All you have to do is call the constructor and start() method.
+ * Set the engine ticks (UPS) and load a model (found on com.camoga.model) to the scene object in the parent class
+ * 
+ * In this example I've added a 61-vertices sphere whose coordinates I've calculated by myself.
+ * Ignore the horrible rendering of the north and south poles...
+ * 
+ * @author MrCamoga
+ *
+ */
 public class Test extends Engine {
 
 	public Polyhedron cube;
