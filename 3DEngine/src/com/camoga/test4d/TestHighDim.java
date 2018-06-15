@@ -1,0 +1,196 @@
+package com.camoga.test4d;
+
+import java.awt.Graphics;
+
+import com.camoga.engine.Engine;
+import com.camoga.engine.Sprite;
+import com.camoga.engine.geom.Vec4d;
+import com.camoga.engine.gfx.Screen;
+import com.camoga.mg.Test;
+import com.camoga.test4d.geom.MatrixNd;
+import com.camoga.test4d.geom.VecNd;
+import com.camoga.test4d.model.NCube;
+import com.camoga.test4d.model.Polytope;
+
+public class TestHighDim extends Engine {
+
+	Polytope tesseract;
+	Sprite sprite;
+	
+	//TODO method to create planes of rotation
+	//7 planes of rotation in 5D (plus the three 3D planes) 
+	double[] planes = new double[3];
+	
+	public TestHighDim() {
+		super();
+		UPS = 60D;
+		
+//		cam = new Camera4d(key);
+		
+		tesseract = new NCube(4, 25, 1, 0xffff0000);
+		
+		
+	}
+
+	private double lambda = 0.01;
+	
+	boolean optimize = false;
+	
+	@Override
+	public void tick(double dt) {
+		super.tick(dt);
+		if(key.ENTER) optimize = !optimize;
+		if(optimize)
+		for(int j = 0; j < 3; j++) {
+			
+			transformPolytope(tesseract);
+			
+			double w = projLength(tesseract, 3);
+			
+			double[] pPlanes = new double[planes.length];
+
+			for(int i = 0; i < pPlanes.length; i++) {
+				pPlanes[i] = (2*Math.random()-1)*lambda;
+			}
+			
+			for(int i = 0; i < pPlanes.length; i++) {
+				planes[i] += pPlanes[i];
+			}
+			
+			transformPolytope(tesseract);
+			
+			if(projLength(tesseract, 3) < w) {
+				for(int i = 0; i < pPlanes.length; i++) {
+					planes[i] -= pPlanes[i];
+				}
+				transformPolytope(tesseract);
+			}
+			
+			else System.out.println(projLength(tesseract, 3));
+		}
+		else transformPolytope(tesseract);
+		
+		//Transform vec5d to vec4d so it can be rendered
+		for(int i = 0; i < tesseract.transform4d.length; i++) {
+			tesseract.transform4d[i] = vec4projection(tesseract.transform5d[i], 0,1,2);
+		}
+	}
+	
+	/**
+	 * @param p model
+	 * @param axis projection 
+	 * @return the projected length of the polytope
+	 */
+	public double projLength(Polytope p, int axis) {
+		double min = 0;
+		double max = 0;
+		for(VecNd vecN : p.transform5d) {
+			if(vecN.xs[axis] < min) min = vecN.xs[axis];
+			else if(vecN.xs[axis] > max) max = vecN.xs[axis];
+		}
+		
+		return max-min;
+	}
+	
+	//TODO find the area of a 2D projection
+	/**
+	 * Area found using the shoelace algorithm
+	 * @param p model
+	 * @param axis1 <b>axis2</b> projected axes
+	 * @return area of projection
+	 */
+	public static double areaProj(Polytope p, int axis1, int axis2) {
+		double A = 0;
+		
+		for(int i=0; i < (p.transform5d.length-1); i++) {
+			A += p.transform5d[i].xs[axis1]*p.transform5d[i+1].xs[axis2];
+			A -= p.transform5d[i+1].xs[axis1]*p.transform5d[i].xs[axis2];
+		}
+
+		return Math.abs(A/2);
+	}
+	
+	/**
+	 * Apply the rotations and scaling
+	 * @param p model
+	 */
+	public void transformPolytope(Polytope p) {
+		for(int i = 0; i < p.transform5d.length; i++) {
+			int index = 0;
+			MatrixNd m = MatrixNd.ID(p.N+1);
+			
+			for(int j = 0; j < p.N; j++) {
+				for(int k = 3; k < p.N; k++) {
+					if(k==j) continue;
+					if(j > k) break;
+					m = m.multiply(rot(planes[index], j, k, p.N+1));
+					index++;
+				}
+			}
+			
+			p.transform5d[i] = m.multiply(scale(p.scale, p.N+1)).multiply(p.vertices[i]);;
+		}
+	}
+	
+	/**
+	 * 
+	 * @param angle by which the plane is rotated
+	 * @param axis1 <b>axis2</b> two axis of a plane
+	 * @param N number of dimensions
+	 * @return rotation transformation
+	 */
+	public MatrixNd rot(double angle, int axis1, int axis2, int N) {
+//		System.out.println(axis1+","+axis2);
+		MatrixNd base = MatrixNd.ID(N);
+		double cos = Math.cos(angle);
+		double sin = Math.sin(angle);
+		base.matrix[axis1][axis1] = cos;
+		base.matrix[axis1][axis2] = -sin;
+		base.matrix[axis2][axis1] = sin;
+		base.matrix[axis2][axis2] = cos;
+		
+		return base;
+	}
+	
+	/**
+	 * 
+	 * @param scale factor of scaling
+	 * @param N dimension of the matrix
+	 * @return scaling transformation
+	 */
+	public MatrixNd scale(double scale, int N) {
+		MatrixNd base = MatrixNd.ID(N);
+		for(int i = 0; i < N-1; i++) {
+			base.matrix[i][i] = scale;
+		}
+		return base;
+	}
+	
+	/**
+	 * 
+	 * @param vecN to project onto R3
+	 * @param axis1 <b>axis2 axis3</b> axes to be projected
+	 * @return homogeneous vector of projection
+	 */
+	public Vec4d vec4projection(VecNd vecN, Integer axis1, Integer axis2, Integer axis3) {
+		Vec4d vec = rot(-cam.rot.x, 1, 2, 4)
+				.multiply(rot(-cam.rot.y, 0, 2, 4))
+				.multiply(rot(-cam.rot.z, 0, 1, 4))
+				.multiply(new Vec4d(axis1 == null ? 0:vecN.xs[axis1], axis2==null ? 0:vecN.xs[axis2], axis3 == null ? 0:vecN.xs[axis3], vecN.w0));
+		return vec;
+	}
+	
+	public static void main(String[] args) {
+		new TestHighDim().start();
+	}
+	
+	@Override
+	public void predraw(Screen screen) {
+		tesseract.render(this);
+	}
+
+	@Override
+	public void postdraw(Graphics g) {
+		
+	}
+}
