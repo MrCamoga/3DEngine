@@ -131,7 +131,7 @@ public abstract class Engine extends Canvas implements Runnable {
 //		g.drawImage(image2, 0, 0, (int)DIMENSION.getWidth(), (int)DIMENSION.getHeight(),null);
 		postdraw(g);
 		
-		cam.render(g);
+		cam.render(g,0,0);
 
 		g.dispose();
 //		image2 = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
@@ -153,15 +153,15 @@ public abstract class Engine extends Canvas implements Runnable {
 	
 	//TODO remove random color
 	/**
-	 * projects and renders a set of points onto the screen
+	 * projects and renders a set of vertices onto the screen
 	 * @param g graphics object
-	 * @param vec4s array of vertices
+	 * @param vertices array of vertices
 	 * @param dotSize size of dots (squares)
 	 * @param color color of the dots
 	 */
-	public void renderPoint(Graphics g, Vec4d[] vec4s, double dotSize, int color) {
-		for(int i = 0; i < vec4s.length; i++) {
-			Vec4d vec = vec4s[i].normalize();
+	public void renderPoint(Graphics g, Vec4d[] vertices, double dotSize, int color) {
+		for(int i = 0; i < vertices.length; i++) {
+			Vec4d vec = vertices[i].normalize();
 			
 			double Z = vec.z - cam.pos.z;
 			if(Z <= 0) continue;
@@ -174,7 +174,7 @@ public abstract class Engine extends Canvas implements Runnable {
 //			System.out.println(distance);
 			double apparentSize = dotSize/distance;
 			if(apparentSize < 2) apparentSize = 2;
-			screen.drawPoint(xp, yp, (int) Z, (int)apparentSize, (int) (0xff000000 + 0xffffff*(double)i/(double)vec4s.length));
+			screen.drawPoint(xp, yp, (int) Z, (int)apparentSize, (int) (0xff000000 + 0xffffff*(double)i/(double)vertices.length));
 			
 //			Graphics2D g2d = image2.createGraphics();
 //			g2d.setColor(new Color(0xff, 0xff, 0xff, 0xff));
@@ -183,20 +183,20 @@ public abstract class Engine extends Canvas implements Runnable {
 		}
 	}
 	
-	//FIXME optimize screen projection, since the same points are projected multiple times
+	//FIXME project all the vertices onto the screen and then render them
 	/**
 	 * projects and renders a set of edges onto the screen
-	 * @param vec4s array of vertices
+	 * @param vertices array of vertices
 	 * @param edges array of vertices pairs (edges)
 	 * @param lineSize edge thickness
 	 * @param color edge color
 	 */
-	public void renderHollowModel(Vec4d[] vec4s, int[][] edges, double lineSize, int color) {
+	public void renderHollowModel(Vec4d[] vertices, int[][] edges, double lineSize, int color) {
 		for(int i = 0; i < edges.length; i++) {
 			int[][] pos = new int[2][3];
 			boolean draw = true;
 			for(int j = 0; j < edges[i].length; j++) {
-				Vec4d vec = vec4s[edges[i][j]].normalize();
+				Vec4d vec = vertices[edges[i][j]].normalize();
 				double Z = vec.z - cam.pos.z;
 				if(Z <= 0) {
 					draw = false;
@@ -221,12 +221,12 @@ public abstract class Engine extends Canvas implements Runnable {
 	/**
 	 * Projects and renders a set of faces onto the screen
 	 * 
-	 * @param vectors array of transformed vertices
+	 * @param vertices array of transformed vertices
 	 * @param faces array of faces to be drawn: int[face][vertices]
 	 * @param textureCoords coordinates of the texture for each vertex
 	 * @param color ???
 	 */
-	public void renderPolygons(Vec4d[] vectors, int[][] faces, double[][] textureCoords, Sprite sprite) {
+	public void renderPolygons(Vec4d[] vertices, int[][] faces, double[][] textureCoords, Sprite sprite) {
 		int[][] pos;
 		int index = 0;
 		for(int i = 0; i < faces.length; i++) {
@@ -236,7 +236,7 @@ public abstract class Engine extends Canvas implements Runnable {
 				boolean draw = true;
 				//Compute x, y and z position with respect to the camera of all the points in a face
 				for(int n = 0; n < faces[i].length; n++) {
-					Vec4d vec = vectors[faces[i][n]].normalize();
+					Vec4d vec = vertices[faces[i][n]].normalize();
 					double Z = vec.z - cam.pos.z;
 					if(Z <= 0) {
 						draw = false;

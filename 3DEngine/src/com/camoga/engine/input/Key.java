@@ -7,6 +7,10 @@ import com.camoga.engine.Engine;
 
 public class Key implements KeyListener {
 
+	/**
+	 * Creates Keyboard object
+	 * @param main
+	 */
 	public Key(Engine main) {
 		main.addKeyListener(this);
 	}
@@ -33,6 +37,9 @@ public class Key implements KeyListener {
 	public boolean N;
 	public boolean ENTER;
 	
+	/**
+	 * Updates key states 
+	 */
 	public void tick() {
 		up = keys[KeyEvent.VK_UP];
 		down = keys[KeyEvent.VK_DOWN];
@@ -63,12 +70,6 @@ public class Key implements KeyListener {
 	}
 
 	public void keyPressed(KeyEvent e) {
-//		if(e.getKeyCode() == KeyEvent.VK_W) z+=0.01;
-//		if(e.getKeyCode() == KeyEvent.VK_S) z-=0.01;
-//		if(e.getKeyCode() == KeyEvent.VK_A) x-=0.01;
-//		if(e.getKeyCode() == KeyEvent.VK_D) x+=0.01;
-//		if(e.getKeyCode() == KeyEvent.VK_Q) y+=0.01;
-//		if(e.getKeyCode() == KeyEvent.VK_E) y-=0.01;
 		keys[e.getKeyCode()] = true;
 	}
 

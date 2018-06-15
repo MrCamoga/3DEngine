@@ -24,15 +24,30 @@ public class Screen {
 	}
 	
 	//TODO
+	/**
+	 * clears pixel array to be drawn again
+	 */
 	public void clear() {
 		background(0xff000000);
 		Arrays.fill(depthBuffer, Float.MAX_VALUE);
 	}
 	
+	/**
+	 * fills pixel array with a color
+	 * @param color
+	 */
 	public void background(int color) {
 		Arrays.fill(pixels, color);
 	}
 	
+	/**
+	 * Draws a point onto the screen on xp and yp coordinates
+	 * @param xp x position
+	 * @param yp y position
+	 * @param z depth
+	 * @param size 
+	 * @param color
+	 */
 	public void drawPoint(int xp, int yp, int z, int size, int color) {
 		for(int y = 0; y < size; y++) {
 			int ya = y+yp-size/2;
@@ -49,6 +64,13 @@ public class Screen {
 	}
 	
 	//TODO INTERPOLATE DEPTH
+	/**
+	 * Draws a line between two points
+	 * @param a first point
+	 * @param b second point
+	 * @param size thickness
+	 * @param color
+	 */
 	public void drawLine(Vec3 a, Vec3 b, int size, int color) {
 		int ymin = (int) Math.min(a.y, b.y);
 		int ymax = (int) Math.max(a.y, b.y);
@@ -94,6 +116,12 @@ public class Screen {
 //		
 	}
 	
+	/**
+	 * draws a sprite
+	 * @param xp x starting position
+	 * @param yp y starting position
+	 * @param sprite to be drawn
+	 */
 	public void drawSprite(int xp, int yp, Sprite sprite) {
 		for(int y = 0; y < sprite.height; y++) {
 			int ya = y + yp;
@@ -108,7 +136,7 @@ public class Screen {
 	}
 	
 	/**
-	 * 
+	 * Rasterizes a triangle and interpolates a texture over it
 	 * @param a first vertex
 	 * @param b second vertex
 	 * @param c third vertex
@@ -175,6 +203,7 @@ public class Screen {
 		}
 	}
 	
+	//FIXME
 	public int alphablending(int color1, int color2) {
 		float factor = (float)(color2&0xff000000 >> 24)/255f;
 		int r = (int) ((color1&0xff0000 >> 16)*(1-factor) + (color2&0xff0000 >> 16)*factor);
@@ -184,7 +213,7 @@ public class Screen {
 	}
 	
 	/**
-	 * 
+	 * Rasterizes a triangle and interpolates a color over it
 	 * @param a first vertex
 	 * @param b second vertex
 	 * @param c third vertex
@@ -228,14 +257,35 @@ public class Screen {
 		}
 	}
 	
+	/**
+	 * 
+	 * @param a
+	 * @param b
+	 * @param c
+	 * @return min of the three
+	 */
 	public int min(double a, double b, double c) {
 		return (int) Math.min(a, Math.min(b, c));
 	}
 	
+	/**
+	 * 
+	 * @param a
+	 * @param b
+	 * @param c
+	 * @return max of the three
+	 */
 	public int max(double a, double b, double c) {
 		return (int) Math.max(a, Math.max(b, c));
 	}
 	
+	/**
+	 * Returns the area of the triangle between a point and two vectors 
+	 * @param p
+	 * @param v0
+	 * @param v1
+	 * @return
+	 */
 	public double edgeFunction(Vec3 p, Vec3 v0, Vec3 v1) {
 		return (p.x - v0.x)*(v1.y - v0.y) - (p.y - v0.y)*(v1.x - v0.x);
 	}
