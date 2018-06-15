@@ -154,7 +154,6 @@ public class TestHighDim extends Engine {
 	 * @return rotation transformation
 	 */
 	public MatrixNd rot(double angle, int axis1, int axis2, int N) {
-//		System.out.println(axis1+","+axis2);
 		MatrixNd base = MatrixNd.ID(N);
 		double cos = Math.cos(angle);
 		double sin = Math.sin(angle);

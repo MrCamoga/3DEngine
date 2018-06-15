@@ -2,10 +2,8 @@ package com.camoga.engine;
 
 import java.awt.BorderLayout;
 import java.awt.Canvas;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
@@ -160,21 +158,15 @@ public abstract class Engine extends Canvas implements Runnable {
 	 * @param color color of the dots
 	 */
 	public void renderPoint(Graphics g, Vec4d[] vertices, double dotSize, int color) {
+		Vec3[] pos = worldToScreen(vertices);
 		for(int i = 0; i < vertices.length; i++) {
-			Vec4d vec = vertices[i].normalize();
 			
-			double Z = vec.z - cam.pos.z;
-			if(Z <= 0) continue;
-			int xp = (int) ((vec.x-cam.pos.x)*FOCAL/Z + WIDTH/2);
-			int yp = (int) (-(vec.y-cam.pos.y)*FOCAL/Z + HEIGHT/2);
-//			if(i<2)
-//			System.out.println("point: x: " + xp+", y: " + yp);
+			if(pos[i].z <= 0) continue;
 			
-			double distance = cam.pos.getDistance(vec);
-//			System.out.println(distance);
+			double distance = cam.pos.getDistance(vertices[i].normalize());
 			double apparentSize = dotSize/distance;
 			if(apparentSize < 2) apparentSize = 2;
-			screen.drawPoint(xp, yp, (int) Z, (int)apparentSize, (int) (0xff000000 + 0xffffff*(double)i/(double)vertices.length));
+			screen.drawPoint((int)pos[i].x, (int)pos[i].y, pos[i].z, (int)apparentSize, (int) (0xff000000 + 0xffffff*(double)i/(double)vertices.length));
 			
 //			Graphics2D g2d = image2.createGraphics();
 //			g2d.setColor(new Color(0xff, 0xff, 0xff, 0xff));
@@ -183,7 +175,6 @@ public abstract class Engine extends Canvas implements Runnable {
 		}
 	}
 	
-	//FIXME project all the vertices onto the screen and then render them
 	/**
 	 * projects and renders a set of edges onto the screen
 	 * @param vertices array of vertices
@@ -192,19 +183,14 @@ public abstract class Engine extends Canvas implements Runnable {
 	 * @param color edge color
 	 */
 	public void renderHollowModel(Vec4d[] vertices, int[][] edges, double lineSize, int color) {
+		Vec3[] pos = worldToScreen(vertices);
 		for(int i = 0; i < edges.length; i++) {
-			int[][] pos = new int[2][3];
 			boolean draw = true;
 			for(int j = 0; j < edges[i].length; j++) {
-				Vec4d vec = vertices[edges[i][j]].normalize();
-				double Z = vec.z - cam.pos.z;
-				if(Z <= 0) {
+				if(pos[edges[i][j]].z <= 0) {
 					draw = false;
 					break;
 				}
-				pos[j][0] = (int) ((vec.x-cam.pos.x)*FOCAL/Z + WIDTH/2);
-				pos[j][1] = (int) (-(vec.y-cam.pos.y)*FOCAL/Z + HEIGHT/2);
-				pos[j][2] = (int) Z;
 //				
 //				double distance = cam.pos.getDistance(vec);
 //				double apparentSize = dotSize/distance;
@@ -212,7 +198,7 @@ public abstract class Engine extends Canvas implements Runnable {
 //				screen.drawPoint(xp, yp, (int) Z, (int)apparentSize, color);
 			}
 			if(draw) {
-				screen.drawLine(new Vec3(pos[0]), new Vec3(pos[1]), (int)lineSize, color);
+				screen.drawLine(pos[edges[i][0]], pos[edges[i][1]], (int)lineSize, color);
 			}
 		}
 	}
@@ -227,30 +213,27 @@ public abstract class Engine extends Canvas implements Runnable {
 	 * @param color ???
 	 */
 	public void renderPolygons(Vec4d[] vertices, int[][] faces, double[][] textureCoords, Sprite sprite) {
-		int[][] pos;
+		Vec3[] pos = worldToScreen(vertices);
 		int index = 0;
 		for(int i = 0; i < faces.length; i++) {
 //			sprite = new Sprite(16,16,(int) (0xff000000 + 0xffffff*(double)i/faces.length));
 			//Decompose face into triangles (vertices - 2 = num of triangles)
-				pos = new int[faces[i].length][3];
+//				pos = new int[faces[i].length][3];
 				boolean draw = true;
 				//Compute x, y and z position with respect to the camera of all the points in a face
 				for(int n = 0; n < faces[i].length; n++) {
-					Vec4d vec = vertices[faces[i][n]].normalize();
-					double Z = vec.z - cam.pos.z;
-					if(Z <= 0) {
+					
+					if(pos[faces[i][n]].z <= 0) {
 						draw = false;
 						break;
 					};
-					pos[n][0] = (int) ((vec.x-cam.pos.x)*FOCAL/Z + WIDTH/2);
-					pos[n][1] = (int) (-(vec.y-cam.pos.y)*FOCAL/Z + HEIGHT/2);
-					pos[n][2] = (int) Z;
+					
 				}
 			for(int j = 0; j < faces[i].length-2; j++) {
 				if(draw) {
 //					g.setColor(new Color((int) (color*Math.log(i+2)*(i*i-i-1))));
 					screen.fillTriangle(
-							new Vec3(pos[0]), new Vec3(pos[j+1]), new Vec3(pos[j+2]), 
+							pos[faces[i][0]], pos[faces[i][j+1]], pos[faces[i][j+2]], 
 							new Point2D(textureCoords[index]), new Point2D(textureCoords[index+1+j]), new Point2D(textureCoords[index+2+j]), sprite);				
 				}
 			}
@@ -258,25 +241,20 @@ public abstract class Engine extends Canvas implements Runnable {
 		}
 	}
 	
-//	public void renderTriangle(Graphics g, Matrix[] matrix, int[] face, double[][] textureCoord, int color) {
-//		int[][] pos;
-//		pos = new int[face.length][3];
-//		boolean draw = true;
-//		for(int n = 0; n < face.length; n++) {
-//			double[][] m = matrix[face[n]].matrix;
-//			if(m[2][0] - cam.pos.z <= 0) {
-//				draw = false;
-//				break;
-//			};
-//			pos[n][0] = (int) ((m[0][0]-cam.pos.x)*FOCAL/(m[2][0]-cam.pos.z) + WIDTH/2);
-//			pos[n][1] = (int) (-(m[1][0]-cam.pos.y)*FOCAL/(m[2][0]-cam.pos.z) + HEIGHT/2);
-//			pos[n][2] = (int) (m[2][0]-cam.pos.z);
-//		}
-//		if(draw) {
-////			Cg.setColor(new Color((int) (color*Math.log(i+2)*(i*i-i-1))));
-//			screen.fillTriangle(new Vec3(pos[0]), new Vec3(pos[1]), new Vec3(pos[2]), new Point2D(textureCoord[0]), new Point2D(textureCoord[1]), new Point2D(textureCoord[2]), sprite);				
-//		}
-//	}
+	public Vec3[] worldToScreen(Vec4d[] vertices) {
+		Vec3[] pos = new Vec3[vertices.length];
+		
+		for(int i = 0; i < pos.length; i++) {
+			vertices[i].normalize();
+			double z = vertices[i].z-cam.pos.z;
+			
+			double x = (vertices[i].x-cam.pos.x)*FOCAL/z + WIDTH/2;
+			double y = -(vertices[i].y-cam.pos.y)*FOCAL/z + HEIGHT/2;
+			pos[i] = new Vec3(x, y, z);
+		}
+		
+		return pos;
+	}
 	
 	/**
 	 * creates and runs the thread
@@ -289,7 +267,7 @@ public abstract class Engine extends Canvas implements Runnable {
 	}
 	
 	/**
-	 * destroys the threadd
+	 * destroys the thread
 	 */
 	public void stop() {
 		if(!running) return;

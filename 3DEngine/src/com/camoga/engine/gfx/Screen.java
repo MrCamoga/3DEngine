@@ -23,7 +23,6 @@ public class Screen {
 		depthBuffer = new float[width*height];
 	}
 	
-	//TODO
 	/**
 	 * clears pixel array to be drawn again
 	 */
@@ -48,7 +47,7 @@ public class Screen {
 	 * @param size 
 	 * @param color
 	 */
-	public void drawPoint(int xp, int yp, int z, int size, int color) {
+	public void drawPoint(int xp, int yp, double z, int size, int color) {
 		for(int y = 0; y < size; y++) {
 			int ya = y+yp-size/2;
 			for(int x = 0; x < size; x++) {
@@ -57,7 +56,7 @@ public class Screen {
 				int i = xa+ya*width;
 				if(depthBuffer[i] > z) {
 					pixels[i] = color;
-					depthBuffer[i]=z;
+					depthBuffer[i]=(float) z;
 				}
 			}
 		}
@@ -77,7 +76,9 @@ public class Screen {
 		int xmin = (int) Math.min(a.x, b.x);
 		int xmax = (int) Math.max(a.x, b.x);
 		
-		if(xmin >= width || ymin >= height || xmax < 0 || ymax < 0) return;
+		if(xmin >= width || ymin >= height || xmax < 0 || ymax < 0) {
+			return;
+		}
 		if(xmin < 0) xmin = 0;
 		if(xmax >= width) xmax = width;
 		if(ymin < 0) ymin = 0;
@@ -105,12 +106,11 @@ public class Screen {
 		x = a.x;
 		y = a.y;
 		for(int i = 1; i <= step; i++) {
-			if((int)x < 0 || (int)y < 0 || (int)x >= this.width || (int)y >= this.height) continue;
+			if(!((int)x < 0 || (int)y < 0 || (int)x >= this.width || (int)y >= this.height)) 
 				pixels[(int)x+(int)y*this.width] = color;
-				x += dx; 
-				y += dy;
+			x += dx; 
+			y += dy;
 //				i += step > 0 ? 1:-1;
-//				System.out.println(x);
 		}
 		
 //		
@@ -205,7 +205,7 @@ public class Screen {
 	
 	//FIXME
 	public int alphablending(int color1, int color2) {
-		float factor = (float)(color2&0xff000000 >> 24)/255f;
+		float factor = (float)((color2&0xff000000) >> 24)/255f;
 		int r = (int) ((color1&0xff0000 >> 16)*(1-factor) + (color2&0xff0000 >> 16)*factor);
 		int g = (int) ((color1&0xff00 >> 8)*(1-factor) + (color2&0xff00 >> 8)*factor);
 		int b = (int) ((color1&0xff)*(1-factor) + (color2&0xff)*factor);
