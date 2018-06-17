@@ -2,8 +2,10 @@ package com.camoga.engine;
 
 import java.awt.BorderLayout;
 import java.awt.Canvas;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
@@ -26,7 +28,7 @@ import com.camoga.engine.input.Key;
 public abstract class Engine extends Canvas implements Runnable {
 
 	public static String TITLE = "3D Engine";
-	public static int SCALE = 1;
+	public static int SCALE = 3;
 	public static int WIDTH = 1280/SCALE, HEIGHT = 720/SCALE;
 	public static Dimension DIMENSION = new Dimension(WIDTH*SCALE, HEIGHT*SCALE);
 	public static int FOCAL = 1000/SCALE;
@@ -41,7 +43,7 @@ public abstract class Engine extends Canvas implements Runnable {
 	public JFrame frame;
 	public BufferedImage image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
 	public int[] pixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
-//	public BufferedImage image2 = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
+	public BufferedImage image2 = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
 	
 	public Key key;
 	public static Camera cam;
@@ -126,13 +128,13 @@ public abstract class Engine extends Canvas implements Runnable {
 			pixels[i] = screen.pixels[i];
 		}
 		g.drawImage(image, 0, 0, (int)DIMENSION.getWidth(), (int)DIMENSION.getHeight(), null);
-//		g.drawImage(image2, 0, 0, (int)DIMENSION.getWidth(), (int)DIMENSION.getHeight(),null);
+		g.drawImage(image2, 0, 0, (int)DIMENSION.getWidth(), (int)DIMENSION.getHeight(),null);
 		postdraw(g);
 		
 		cam.render(g,0,0);
 
 		g.dispose();
-//		image2 = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
+		image2 = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
 		buffer.show();
 	}
 	
@@ -149,7 +151,6 @@ public abstract class Engine extends Canvas implements Runnable {
 	 */
 	public abstract void postdraw(Graphics g);
 	
-	//DONE remove random color
 	/**
 	 * projects and renders a set of vertices onto the screen
 	 * @param g graphics object
@@ -168,9 +169,9 @@ public abstract class Engine extends Canvas implements Runnable {
 			if(apparentSize < 2) apparentSize = 2;
 			screen.drawPoint((int)pos[i].x, (int)pos[i].y, pos[i].z, (int)apparentSize, color);
 			
-//			Graphics2D g2d = image2.createGraphics();
-//			g2d.setColor(new Color(0xff, 0xff, 0xff, 0xff));
-//			g2d.drawString(""+i, xp, yp);
+			Graphics2D g2d = image2.createGraphics();
+			g2d.setColor(new Color(0xff, 0xff, 0xff, 0xff));
+			g2d.drawString(""+i, (int)pos[i].x, (int)pos[i].y);
 		
 		}
 	}
@@ -216,7 +217,7 @@ public abstract class Engine extends Canvas implements Runnable {
 		Vec3[] pos = worldToScreen(vertices);
 		int index = 0;
 		for(int i = 0; i < faces.length; i++) {
-//			sprite = new Sprite(16,16,(int) (0xff000000 + 0xffffff*(double)i/faces.length));
+			sprite = new Sprite(16,16,(int) (0xff000000 + 0xffffff*(double)i/faces.length));
 			//Decompose face into triangles (vertices - 2 = num of triangles)
 //				pos = new int[faces[i].length][3];
 				boolean draw = true;

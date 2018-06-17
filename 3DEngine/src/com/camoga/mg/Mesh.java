@@ -33,7 +33,7 @@ public class Mesh extends Engine {
 		double[][] vertices = new double[height*width][];
 		for(int i = 0; i < height; i++) {
 			for(int j = 0; j < width; j++) {
-				vertices[i+j*width] = new double[] {i-width/2,Math.cos(j)+Math.sin(i),j-height/2};
+				vertices[i+j*width] = new double[] {i-width/2,0,j-height/2};
 			}
 		}
 		
@@ -52,7 +52,7 @@ public class Mesh extends Engine {
 			textureCoords[4*i+3] = new double[] {0,1};
 		}
 		
-		mesh = new Model(vertices, faces, textureCoords, 2, new Sprite(16, 16, 0xff23c5e3));
+		mesh = new Model(vertices, faces, textureCoords, 0.5, new Sprite(16, 16, 0xff23c5e3));
 		scene.add(mesh);
 	}
 	
@@ -61,9 +61,9 @@ public class Mesh extends Engine {
 		
 		//Draw function which may be dependent of time (using Engine.time)
 		for(int y = 0; y < height; y++) {
-			double yo = (y-height/2)/10.0+Math.sin(Engine.time);
+			double yo = (y-height/2)/10.0;
 			for(int x = 0; x < width; x++) {
-				double xo = (x-width/2)/10.0+Math.cos(Engine.time);
+				double xo = (x-width/2)/10.0;
 //				mesh.vertices[j+i*width].y = Math.cos(j+Engine.time)+0.5*Math.cos(2*j+Engine.time)+0.333333333*Math.cos(3*j+Engine.time)
 //				+Math.sin(i+Engine.time)+0.5*Math.sin(2*i+Engine.time)+0.333333333*Math.sin(3*i+Engine.time);
 				
@@ -73,7 +73,7 @@ public class Mesh extends Engine {
 				//semisphere
 //				mesh.vertices[x+y*width].y = -Math.sqrt(625-xo*xo-yo*yo);
 				
-				mesh.vertices[x+y*width].y = -Math.exp(-xo*xo-yo*yo)*10*Math.sin(Engine.time*Math.PI/3);
+				mesh.vertices[x+y*width].y = Math.exp(-xo*xo-yo*yo)*30;
 				
 			}
 		}

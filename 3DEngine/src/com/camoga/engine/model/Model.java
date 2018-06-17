@@ -18,10 +18,7 @@ public class Model {
 	public Vec3 pos = new Vec3();
 	
 	public Model(double[][] vertices, int[][] faces, double[][] textureCoords, double scale, Sprite sprite) {
-		this.vertices = new Vec4d[vertices.length];
-		for(int i = 0; i < vertices.length; i++) {
-			this.vertices[i] = new Vec4d(vertices[i][0], vertices[i][1], vertices[i][2]);
-		}
+		setVertices(vertices);
 		
 		this.faces = faces;
 		this.textureCoords = textureCoords;
@@ -30,6 +27,13 @@ public class Model {
 		transform = new Vec4d[vertices.length];
 		for(int i = 0; i < vertices.length; i++) {
 			transform[i] = new Vec4d(vertices[i][0],vertices[i][1],vertices[i][2]);
+		}
+	}
+	
+	public void setVertices(double[][] vertices) {
+		this.vertices = new Vec4d[vertices.length];
+		for(int i = 0; i < vertices.length; i++) {
+			this.vertices[i] = new Vec4d(vertices[i][0], vertices[i][1], vertices[i][2]);
 		}
 	}
 	

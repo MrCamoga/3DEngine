@@ -30,7 +30,7 @@ public class Scene {
 	public Scene(Camera cam, Engine main) {
 		this.cam = cam;
 		this.main = main;
-		lights.add(new LightSource(-1, -1, 1));
+		lights.add(new LightSource(0, 1, -1));
 	}
 	
 	/**
@@ -68,7 +68,7 @@ public class Scene {
 						.multiply(rotY(-cam.rot.y))
 						.multiply(rotZ(-cam.rot.z))
 						.multiply(scale(m.scale))
-						.multiply(translate(-cam.pos.x, -cam.pos.y, -cam.pos.z))
+//						.multiply(translate(-cam.pos.x, -cam.pos.y, -cam.pos.z))
 						.multiply(m.vertices.get(i)));
 			}
 		}

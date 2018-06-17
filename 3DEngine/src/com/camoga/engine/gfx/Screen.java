@@ -163,22 +163,9 @@ public class Screen {
 		double area = edgeFunction(a, b, c);
 		boolean yInside = false;
 		
-		//TODO put lightning code inside method and add multiple lights
 		//pixel brightness
-		double Ka = 0.2;
-		double Ia = 0.2;
-		double Iamb = Ka*Ia;
-		double Itotal = Iamb;
-		for(LightSource l : Engine.scene.getLights()) {
-			double Kd = 1;
-			double Id = 1.3;
-			Vec3 normal = Vec3.cross(b, a, c);
-			
-			double Idiff = (Kd*Id*Vec3.dotNorm(normal, l.transform));
-			if(Idiff < 0) Idiff = 0;
-			Itotal += Idiff;
-		}
-		if(Itotal > 1) Itotal = 1;
+		double Itotal = flatShading(a, b, c);
+		
 		
 		yLabel:for(int y = ymin; y <= ymax; y++) {
 			boolean xInside = false;
@@ -195,7 +182,6 @@ public class Screen {
 					w0 /= area;
 					w1 /= area;
 					w2 /= area;
-					
 					
 					
 					//FIXME Perspective correct interpolation
@@ -231,6 +217,32 @@ public class Screen {
 		}
 	}
 	
+	/**
+	 * Returns light intensity value for a triangle
+	 * @param a triangle's first vertex
+	 * @param b second vertex
+	 * @param c third vertex
+	 * @return light intensity
+	 */
+	public double flatShading(Vec3 a, Vec3 b, Vec3 c) {
+		double Ka = 0.3;
+		double Ia = 1;
+		double Iamb = Ka*Ia;
+		double Itotal = Iamb;
+		for(LightSource l : Engine.scene.getLights()) {
+			double Kd = 0.6;
+			double Id = 1;
+			Vec3 normal = Vec3.cross(b, a, c);
+			
+			double Idiff = (Kd*Id*Vec3.dotNorm(normal, l.transform));
+			if(Idiff < 0) Idiff = 0;
+			Itotal += Idiff;
+		}
+		if(Itotal > 1) Itotal = 1;
+		return Itotal;
+	}
+	
+	//TODO SPHERE AND TORUS MODEL
 	//FIXME
 	public int alphablending(int color1, int color2) {
 		float factor = (float)((color2&0xff000000) >> 24)/255f;
@@ -240,6 +252,7 @@ public class Screen {
 		return (r<<16)|(g<<8)|b;
 	}
 	
+	//TODO Add flat shading and backtrack traversal
 	/**
 	 * Rasterizes a triangle and interpolates a color over it
 	 * @param a first vertex
@@ -318,41 +331,3 @@ public class Screen {
 		return (p.x - v0.x)*(v1.y - v0.y) - (p.y - v0.y)*(v1.x - v0.x);
 	}
 }
-
-//public void fillTriangle(Vec3 a, Vec3 b, Vec3 c, Point2D at, Point2D bt, Point2D ct, Sprite sprite) {
-//	int xmin = min(a.x,b.x,c.x);
-//	int ymin = min(a.y,b.y,c.y);
-//	int xmax = max(a.x,b.x,c.x);
-//	int ymax = max(a.y,b.y,c.y);
-//	
-//	if(xmin >= width || ymin >= height || xmax < 0 || ymax < 0) return;
-//	if(xmin < 0) xmin = 0;
-//	if(xmax >= width) xmax = width;
-//	if(ymin < 0) ymin = 0;
-//	if(ymax >= height) ymax = height;
-//	double area = edgeFunction(a, b, c);
-//	for(int y = ymin; y < ymax; y++) {
-//		for(int x = xmin; x < xmax; x++) {
-//			double w0 = edgeFunction(new Vec3(x,y,0), a, b);
-//			double w1 = edgeFunction(new Vec3(x,y,0), b, c);
-//			double w2 = area - w0 - w1;
-//			if(w0<=0&&w1<=0&&w2<=0) {
-//				if(x < 0 || y < 0 || x >= width || y >= height) continue;
-//				w0 /= area;
-//				w1 /= area;
-//				w2 /= area;
-//				int xT = (int) ((at.x*w1 + bt.x*w2 + ct.x*w0)*sprite.width);
-//				int yT = (int) ((at.y*w1 + bt.y*w2 + ct.y*w0)*sprite.height);
-//				float z = (float)(w0*a.z+w1*b.z+w2*c.z);
-//				int i = x+y*width;
-//				if(xT < 0 || yT < 0 || xT >= sprite.width || yT >= sprite.height) continue;
-//				int col = sprite.getPixels()[(int)(xT+yT*sprite.width)];
-//				if(col != ALPHA)
-//				if(depthBuffer[i] > z) {
-//					pixels[i] = col;
-//					depthBuffer[i] = z;						
-//				}
-//			}
-//		}
-//	}
-//}
