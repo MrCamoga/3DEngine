@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.camoga.engine.geom.Matrix4d;
+import com.camoga.engine.geom.Vec3;
 import com.camoga.engine.geom.Vec4d;
 import com.camoga.engine.input.Camera;
 import com.camoga.engine.model.HollowModel;
@@ -24,10 +25,12 @@ public class Scene {
 	private List<HollowModel> hmodels = new ArrayList<HollowModel>();
 	private List<Polyhedron> polyhedra = new ArrayList<Polyhedron>();
 	private List<Polytope> polytope = new ArrayList<>();
+	private List<LightSource> lights = new ArrayList<LightSource>();
 	
 	public Scene(Camera cam, Engine main) {
 		this.cam = cam;
 		this.main = main;
+		lights.add(new LightSource(-1, -1, 1));
 	}
 	
 	/**
@@ -65,9 +68,17 @@ public class Scene {
 						.multiply(rotY(-cam.rot.y))
 						.multiply(rotZ(-cam.rot.z))
 						.multiply(scale(m.scale))
+						.multiply(translate(-cam.pos.x, -cam.pos.y, -cam.pos.z))
 						.multiply(m.vertices.get(i)));
-//						.multiply(translate(-cam.pos.x, -cam.pos.y, -cam.pos.z))
 			}
+		}
+		
+		for(LightSource light : lights) {
+//			Vec4d t = rotX(-cam.rot.x)
+//					.multiply(rotY(-cam.rot.y))
+//					.multiply(rotZ(-cam.rot.z))
+//					.multiply(light.getDir());
+//			light.transform = new Vec3(t.x, t.y, t.z);
 		}
 		
 		for(Polyhedron m:polyhedra) {
@@ -142,5 +153,9 @@ public class Scene {
 //			main.renderPolygons(g, p.transform, p.faces, p.textureCoords, p.color);
 			p.render(main, g);
 		}
+	}
+	
+	public List<LightSource> getLights() {
+		return lights;
 	}
 }

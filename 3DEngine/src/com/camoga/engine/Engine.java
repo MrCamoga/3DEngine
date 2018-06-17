@@ -44,8 +44,8 @@ public abstract class Engine extends Canvas implements Runnable {
 //	public BufferedImage image2 = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
 	
 	public Key key;
-	public Camera cam;
-	public Scene scene;
+	public static Camera cam;
+	public static Scene scene;
 	public Screen screen;
 	
 	//TODO create Window class
@@ -149,7 +149,7 @@ public abstract class Engine extends Canvas implements Runnable {
 	 */
 	public abstract void postdraw(Graphics g);
 	
-	//TODO remove random color
+	//DONE remove random color
 	/**
 	 * projects and renders a set of vertices onto the screen
 	 * @param g graphics object
@@ -166,7 +166,7 @@ public abstract class Engine extends Canvas implements Runnable {
 			double distance = cam.pos.getDistance(vertices[i].normalize());
 			double apparentSize = dotSize/distance;
 			if(apparentSize < 2) apparentSize = 2;
-			screen.drawPoint((int)pos[i].x, (int)pos[i].y, pos[i].z, (int)apparentSize, (int) (0xff000000 + 0xffffff*(double)i/(double)vertices.length));
+			screen.drawPoint((int)pos[i].x, (int)pos[i].y, pos[i].z, (int)apparentSize, color);
 			
 //			Graphics2D g2d = image2.createGraphics();
 //			g2d.setColor(new Color(0xff, 0xff, 0xff, 0xff));
@@ -221,6 +221,7 @@ public abstract class Engine extends Canvas implements Runnable {
 //				pos = new int[faces[i].length][3];
 				boolean draw = true;
 				//Compute x, y and z position with respect to the camera of all the points in a face
+				
 				for(int n = 0; n < faces[i].length; n++) {
 					
 					if(pos[faces[i][n]].z <= 0) {

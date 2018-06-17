@@ -36,7 +36,7 @@ public class Polytope {
 		this.scale = scale;
 		this.dotSize = dotSize;
 		this.color = color;
-		this.sprite = new Sprite("/wic.png");
+		this.sprite = new Sprite("/triangle.png");
 		transform4d = new Vec4d[vertices.length];
 		for(int i = 0; i < vertices.length; i++) {
 			transform4d[i] = new Vec4d(vertices[i][0],vertices[i][1],vertices[i][2]);
@@ -45,8 +45,6 @@ public class Polytope {
 	}
 	
 	public void render(Engine main) {
-
-		
 //		main.renderObj(g, transform4d, dotSize, color);
 		if(faces!=null)
 		main.renderPolygons(transform4d, faces, textureCoords, sprite);

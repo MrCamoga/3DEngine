@@ -15,6 +15,15 @@ public class Vec3 {
 	public Vec3() {
 		
 	}
+	public Vec3(int[] pos) {
+		this(pos[0], pos[1], pos[2]);
+	}
+	
+	public Vec3(double[] pos) {
+		this(pos[0], pos[1], pos[2]);
+	}
+	
+
 	
 	public Vec3 add(Vec3 v) {
 		x += v.x;
@@ -30,16 +39,50 @@ public class Vec3 {
 		return this;
 	}
 	
+	public Vec3 div(double s) {
+		x /= s;
+		y /= s;
+		z /= s;
+		return this;
+	}
+	
+	public static Vec3 sub(Vec3 a, Vec3 b) {
+		return new Vec3(b.x-a.x, b.y-a.y, b.z-a.z);
+	}
+	
 	public Vec3 mul(double s) {
 		return new Vec3(x*s, y*s, z*s);
 	}
 	
-	public Vec3(int[] pos) {
-		this(pos[0], pos[1], pos[2]);
+	/**
+	 * 
+	 * @param a point
+	 * @param b point
+	 * @param c point
+	 * @return cross product given three points
+	 */
+	public static Vec3 cross(Vec3 a, Vec3 b, Vec3 c) {
+		Vec3 u = sub(a, b);
+		Vec3 v = sub(a, c);
+		return new Vec3(u.y*v.z-u.z*v.y,u.z*v.x-u.x*v.z,u.x*v.y-u.y*v.x);
 	}
 	
-	public Vec3(double[] pos) {
-		this(pos[0], pos[1], pos[2]);
+	public static Vec3 crossNorm(Vec3 a, Vec3 b, Vec3 c) {
+		Vec3 u = sub(a, b);
+		Vec3 v = sub(a, c);
+		return new Vec3(u.y*v.z-u.z*v.y,u.z*v.x-u.x*v.z,u.x*v.y-u.y*v.x).div(Math.sqrt(modSq(u)*modSq(v)));
+	}
+	
+	public static double dot(Vec3 u, Vec3 v) {
+		return u.x*v.x+u.y*v.y+u.z*v.z;
+	}
+	
+	public static double dotNorm(Vec3 u, Vec3 v) {
+		return dot(u, v)/Math.sqrt(modSq(u)*modSq(v));
+	}
+	
+	public static double modSq(Vec3 a) {
+		return (a.x*a.x+a.y*a.y+a.z*a.z);
 	}
 	
 	public double getDistance(Vec4d point) {

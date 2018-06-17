@@ -1,7 +1,10 @@
 package com.camoga.engine.gfx;
 
+import java.awt.Color;
 import java.util.Arrays;
 
+import com.camoga.engine.Engine;
+import com.camoga.engine.LightSource;
 import com.camoga.engine.Sprite;
 import com.camoga.engine.geom.Point2D;
 import com.camoga.engine.geom.Vec3;
@@ -159,9 +162,27 @@ public class Screen {
 		
 		double area = edgeFunction(a, b, c);
 		boolean yInside = false;
-		yLabel:for(int y = ymin; y < ymax; y++) {
+		
+		//TODO put lightning code inside method and add multiple lights
+		//pixel brightness
+		double Ka = 0.2;
+		double Ia = 0.2;
+		double Iamb = Ka*Ia;
+		double Itotal = Iamb;
+		for(LightSource l : Engine.scene.getLights()) {
+			double Kd = 1;
+			double Id = 1.3;
+			Vec3 normal = Vec3.cross(b, a, c);
+			
+			double Idiff = (Kd*Id*Vec3.dotNorm(normal, l.transform));
+			if(Idiff < 0) Idiff = 0;
+			Itotal += Idiff;
+		}
+		if(Itotal > 1) Itotal = 1;
+		
+		yLabel:for(int y = ymin; y <= ymax; y++) {
 			boolean xInside = false;
-			for(int x = xmin; x < xmax; x++) {
+			for(int x = xmin; x <= xmax; x++) {
 				//Compute weights
 				double w0 = edgeFunction(new Vec3(x,y,0), a, b);
 				double w1 = edgeFunction(new Vec3(x,y,0), b, c);
@@ -169,11 +190,13 @@ public class Screen {
 				if((w0<=0&&w1<=0&&w2<=0 || ((w0>=0&&w1>=0&&w2>=0)&&true))) {
 					xInside = true;
 					if(x==xmin) yInside = true;
-//					if(x < 0 || y < 0 || x >= width || y >= height) continue;
+					if(x >= width || y >= height) continue;
 					//normalize the areas
 					w0 /= area;
 					w1 /= area;
 					w2 /= area;
+					
+					
 					
 					//FIXME Perspective correct interpolation
 					//Interpolate depth
@@ -189,7 +212,12 @@ public class Screen {
 					int col = sprite.getPixels()[(xT+yT*sprite.width)];
 					if(col != ALPHA)
 					if(depthBuffer[i] > z) {
-						pixels[i] = col;
+						float[] hsb = Color.RGBtoHSB((col&0xff0000)>>16, (col&0xff00)>>8, (col&0xff), null);
+//						System.out.println(hsb[0]);
+						
+						hsb[2] *= (float)Itotal;
+						if(hsb[2]>1)hsb[2]=1;
+						pixels[i] = Color.HSBtoRGB(hsb[0], hsb[1], hsb[2]);
 						depthBuffer[i] = z;						
 					}
 				} 
