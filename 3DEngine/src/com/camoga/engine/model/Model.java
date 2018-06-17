@@ -7,7 +7,7 @@ import com.camoga.engine.Sprite;
 import com.camoga.engine.geom.Vec3;
 import com.camoga.engine.geom.Vec4d;
 
-public class Polyhedron {
+public class Model {
 
 	public Vec4d[] vertices;
 	public int[][] faces;
@@ -17,7 +17,7 @@ public class Polyhedron {
 	public Vec4d[] transform;
 	public Vec3 pos = new Vec3();
 	
-	public Polyhedron(double[][] vertices, int[][] faces, double[][] textureCoords, double scale, Sprite sprite) {
+	public Model(double[][] vertices, int[][] faces, double[][] textureCoords, double scale, Sprite sprite) {
 		this.vertices = new Vec4d[vertices.length];
 		for(int i = 0; i < vertices.length; i++) {
 			this.vertices[i] = new Vec4d(vertices[i][0], vertices[i][1], vertices[i][2]);

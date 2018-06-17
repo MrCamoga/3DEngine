@@ -6,7 +6,7 @@ import com.camoga.engine.Engine;
 import com.camoga.engine.Sprite;
 import com.camoga.engine.gfx.Screen;
 import com.camoga.engine.model.HollowModel;
-import com.camoga.engine.model.Polyhedron;
+import com.camoga.engine.model.Model;
 
 /**
  * This is the most simple program that you may do.
@@ -21,7 +21,7 @@ import com.camoga.engine.model.Polyhedron;
  */
 public class Test extends Engine {
 
-	public Polyhedron cube;
+	public Model cube;
 	
 	public Test() {
 		super();
@@ -158,7 +158,7 @@ public class Test extends Engine {
 				{2/12.0,5/6.0},{1/12.0,5/6.0},{1/12.0,1},{2/12.0,1},
 				{1/12.0,5/6.0},{0,5/6.0},{0,1},{1/12.0,1},
 		};
-		Polyhedron sphere = new Polyhedron(vertices, faces, textureCoords, 2, new Sprite("/earth.jpg"));
+		Model sphere = new Model(vertices, faces, textureCoords, 2, new Sprite("/earth.jpg"));
 		scene.add(sphere);
 	}
 	

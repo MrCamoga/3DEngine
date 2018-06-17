@@ -5,7 +5,7 @@ import java.awt.Graphics;
 import com.camoga.engine.Engine;
 import com.camoga.engine.Sprite;
 import com.camoga.engine.gfx.Screen;
-import com.camoga.engine.model.Polyhedron;
+import com.camoga.engine.model.Model;
 
 /**
  * This is another example. I've rendered a square mesh.
@@ -16,7 +16,7 @@ import com.camoga.engine.model.Polyhedron;
  */
 public class Mesh extends Engine {
 
-	public Polyhedron mesh;
+	public Model mesh;
 	
 	int width = 50;
 	int height = 50;
@@ -52,7 +52,7 @@ public class Mesh extends Engine {
 			textureCoords[4*i+3] = new double[] {0,1};
 		}
 		
-		mesh = new Polyhedron(vertices, faces, textureCoords, 2, new Sprite(16, 16, 0xff23c5e3));
+		mesh = new Model(vertices, faces, textureCoords, 2, new Sprite(16, 16, 0xff23c5e3));
 		scene.add(mesh);
 	}
 	

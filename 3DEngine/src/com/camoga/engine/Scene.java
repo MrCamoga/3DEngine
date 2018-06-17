@@ -9,7 +9,7 @@ import com.camoga.engine.geom.Vec3;
 import com.camoga.engine.geom.Vec4d;
 import com.camoga.engine.input.Camera;
 import com.camoga.engine.model.HollowModel;
-import com.camoga.engine.model.Polyhedron;
+import com.camoga.engine.model.Model;
 import com.camoga.test4d.model.Polytope;
 
 /**
@@ -23,7 +23,7 @@ public class Scene {
 	private Camera cam;
 	private Engine main;
 	private List<HollowModel> hmodels = new ArrayList<HollowModel>();
-	private List<Polyhedron> polyhedra = new ArrayList<Polyhedron>();
+	private List<Model> polyhedra = new ArrayList<Model>();
 	private List<Polytope> polytope = new ArrayList<>();
 	private List<LightSource> lights = new ArrayList<LightSource>();
 	
@@ -53,7 +53,7 @@ public class Scene {
 	 * Add a model
 	 * @param model
 	 */
-	public void add(Polyhedron model) {
+	public void add(Model model) {
 		polyhedra.add(model);
 	}
 	
@@ -81,7 +81,7 @@ public class Scene {
 //			light.transform = new Vec3(t.x, t.y, t.z);
 		}
 		
-		for(Polyhedron m:polyhedra) {
+		for(Model m:polyhedra) {
 			for(int i = 0; i < m.vertices.length; i++) {
 				m.transform[i] = rotX(-cam.rot.x)
 						.multiply(rotY(-cam.rot.y))
@@ -149,7 +149,7 @@ public class Scene {
 		for(HollowModel m: hmodels) {
 			main.renderPoint(g,m.transform.toArray(new Vec4d[] {}), m.dotSize, m.color);	
 		}
-		for(Polyhedron p: polyhedra) {
+		for(Model p: polyhedra) {
 //			main.renderPolygons(g, p.transform, p.faces, p.textureCoords, p.color);
 			p.render(main, g);
 		}

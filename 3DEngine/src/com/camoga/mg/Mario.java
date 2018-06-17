@@ -6,7 +6,7 @@ import com.camoga.engine.Engine;
 import com.camoga.engine.Sprite;
 import com.camoga.engine.geom.Vec3;
 import com.camoga.engine.gfx.Screen;
-import com.camoga.engine.model.Polyhedron;
+import com.camoga.engine.model.Model;
 
 /**
  * Another example, this one with an icosahedron.
@@ -23,7 +23,7 @@ public class Mario extends Engine {
 	public Vec3 pos = new Vec3(0, 1, 0);
 	public Vec3 velocity = new Vec3(-0.4, -0.5, 0);
 	
-	private Polyhedron icosahedron;
+	private Model icosahedron;
 	
 	public Mario() {
 		super();
@@ -54,7 +54,7 @@ public class Mario extends Engine {
 		};
 		
 		Sprite sprite = new Sprite("/wic.png");
-		icosahedron = new Polyhedron(vertices, faces, tc, 2, sprite);
+		icosahedron = new Model(vertices, faces, tc, 2, sprite);
 		scene.add(icosahedron);
 	}
 	
