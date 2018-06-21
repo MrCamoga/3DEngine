@@ -2,10 +2,8 @@ package com.camoga.engine;
 
 import java.awt.BorderLayout;
 import java.awt.Canvas;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
@@ -18,6 +16,7 @@ import com.camoga.engine.geom.Vec4d;
 import com.camoga.engine.gfx.Screen;
 import com.camoga.engine.input.Camera;
 import com.camoga.engine.input.Key;
+import com.camoga.engine.input.Mouse;
 
 /**
  * Main class of the Engine.
@@ -28,7 +27,7 @@ import com.camoga.engine.input.Key;
 public abstract class Engine extends Canvas implements Runnable {
 
 	public static String TITLE = "3D Engine";
-	public static int SCALE = 3;
+	public static int SCALE = 1;
 	public static int WIDTH = 1280/SCALE, HEIGHT = 720/SCALE;
 	public static Dimension DIMENSION = new Dimension(WIDTH*SCALE, HEIGHT*SCALE);
 	public static int FOCAL = 1000/SCALE;
@@ -46,6 +45,7 @@ public abstract class Engine extends Canvas implements Runnable {
 	public BufferedImage image2 = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
 	
 	public Key key;
+	public Mouse mouse;
 	public static Camera cam;
 	public static Scene scene;
 	public Screen screen;
@@ -60,6 +60,7 @@ public abstract class Engine extends Canvas implements Runnable {
 		frame.setLayout(new BorderLayout());
 		frame.add(this);
 		key = new Key(this);
+		mouse = new Mouse(this);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setLocationRelativeTo(null);
 		
@@ -124,6 +125,7 @@ public abstract class Engine extends Canvas implements Runnable {
 		screen.clear();
 		predraw(screen);
 		scene.render(g);
+		faceID = 0;
 		for(int i = 0; i < pixels.length; i++) {
 			pixels[i] = screen.pixels[i];
 		}
@@ -158,7 +160,7 @@ public abstract class Engine extends Canvas implements Runnable {
 	 * @param dotSize size of dots (squares)
 	 * @param color color of the dots
 	 */
-	public void renderPoint(Graphics g, Vec4d[] vertices, double dotSize, int color) {
+	public void renderPoint(Vec4d[] vertices, double dotSize, int color) {
 		Vec3[] pos = worldToScreen(vertices);
 		for(int i = 0; i < vertices.length; i++) {
 			
@@ -169,9 +171,9 @@ public abstract class Engine extends Canvas implements Runnable {
 			if(apparentSize < 2) apparentSize = 2;
 			screen.drawPoint((int)pos[i].x, (int)pos[i].y, pos[i].z, (int)apparentSize, color);
 			
-			Graphics2D g2d = image2.createGraphics();
-			g2d.setColor(new Color(0xff, 0xff, 0xff, 0xff));
-			g2d.drawString(""+i, (int)pos[i].x, (int)pos[i].y);
+//			Graphics2D g2d = image2.createGraphics();
+//			g2d.setColor(new Color(0xff, 0xff, 0xff, 0xff));
+//			g2d.drawString(""+i, (int)pos[i].x, (int)pos[i].y);
 		
 		}
 	}
@@ -204,6 +206,7 @@ public abstract class Engine extends Canvas implements Runnable {
 		}
 	}
 	
+	int faceID = 0;
 	//TODO add method to render polygon with solid color faces
 	/**
 	 * Projects and renders a set of faces onto the screen
@@ -217,7 +220,7 @@ public abstract class Engine extends Canvas implements Runnable {
 		Vec3[] pos = worldToScreen(vertices);
 		int index = 0;
 		for(int i = 0; i < faces.length; i++) {
-			sprite = new Sprite(16,16,(int) (0xff000000 + 0xffffff*(double)i/faces.length));
+//			sprite = new Sprite(1,1,(int) (0xff000000 + 0xffffff*(double)i/faces.length));
 			//Decompose face into triangles (vertices - 2 = num of triangles)
 //				pos = new int[faces[i].length][3];
 				boolean draw = true;
@@ -236,10 +239,13 @@ public abstract class Engine extends Canvas implements Runnable {
 //					g.setColor(new Color((int) (color*Math.log(i+2)*(i*i-i-1))));
 					screen.fillTriangle(
 							pos[faces[i][0]], pos[faces[i][j+1]], pos[faces[i][j+2]], 
-							new Point2D(textureCoords[index]), new Point2D(textureCoords[index+1+j]), new Point2D(textureCoords[index+2+j]), sprite);				
+							new Point2D(textureCoords[index]), new Point2D(textureCoords[index+1+j]), new Point2D(textureCoords[index+2+j]),
+							sprite,faceID,mouse.face != null && faceID==mouse.face);				
+				
 				}
 			}
 			index+=faces[i].length;
+			faceID++;
 		}
 	}
 	

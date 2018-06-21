@@ -1,4 +1,4 @@
-package com.camoga.test4d.model;
+package com.camoga._4d.model;
 
 import com.camoga.engine.Maths;
 

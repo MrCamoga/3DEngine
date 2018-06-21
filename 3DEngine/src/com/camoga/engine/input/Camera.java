@@ -2,6 +2,7 @@ package com.camoga.engine.input;
 
 import java.awt.Graphics;
 
+import com.camoga.engine.Engine;
 import com.camoga.engine.geom.Vec3;
 
 public class Camera {
@@ -40,6 +41,13 @@ public class Camera {
 		if(input.E) rot.z-=0.01;
 		if(input.A) rot.y-=0.01;
 		if(input.D) rot.y+=0.01;
+
+		if(input.I) Engine.scene.getLights().get(0).transform.z += 0.1;
+		if(input.K) Engine.scene.getLights().get(0).transform.z -= 0.1;
+		if(input.J) Engine.scene.getLights().get(0).transform.x -= 0.1;
+		if(input.L) Engine.scene.getLights().get(0).transform.x += 0.1;
+		if(input.H) Engine.scene.getLights().get(0).transform.y += 0.1;
+		if(input.N) Engine.scene.getLights().get(0).transform.y -= 0.1;
 		
 		//normalize the angles
 		rot.z%=Math.PI*2;

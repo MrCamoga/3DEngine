@@ -1,4 +1,4 @@
-package com.camoga.test4d.geom;
+package com.camoga._4d.geom;
 
 public class VecNd {
 	

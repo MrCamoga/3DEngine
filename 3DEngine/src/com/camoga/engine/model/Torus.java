@@ -33,10 +33,11 @@ public class Torus extends Model {
 		double[][] textureCoords = new double[longNum*shortNum*4][];
 		for(int i = 0; i < shortNum; i++) {
 			for(int j = 0; j < longNum; j++) {
-				textureCoords[4*(j+i*longNum)] = new double[] {(double)j/longNum,(double)i/shortNum};
-				textureCoords[4*(j+i*longNum)+1] = new double[] {((double)(j+1)%longNum)/longNum,(double)(i+1)%shortNum/shortNum};
-				textureCoords[4*(j+i*longNum)+2] = new double[] {(double)j/longNum,(double)(i+1)%shortNum/shortNum};
-				textureCoords[4*(j+i*longNum)+3] = new double[] {((double)(j+1)%longNum)/longNum,(double)i/shortNum};
+				System.out.println(j+","+longNum);
+				textureCoords[4*(j+i*longNum)] = new double[] {(double)j/(longNum),(double)i/shortNum};
+				textureCoords[4*(j+i*longNum)+1] = new double[] {((double)(j+1))/longNum,(double)(i+1)/shortNum};
+				textureCoords[4*(j+i*longNum)+2] = new double[] {(double)j/longNum,(double)(i+1)/shortNum};
+				textureCoords[4*(j+i*longNum)+3] = new double[] {((double)(j+1))/longNum,(double)i/shortNum};
 			}
 		}
 		return textureCoords;

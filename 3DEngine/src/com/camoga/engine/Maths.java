@@ -24,4 +24,8 @@ public class Maths {
 		}
 		return result;
 	}
+	
+	public static int choose(int n, int b) {
+		return factorial(n)/(factorial(b)*factorial(n-b));
+	}
 }

@@ -47,6 +47,13 @@ public class Sprite {
 		}
 	}
 	
+	public void set(int[] pixels) {
+		if(pixels.length != this.pixels.length) return;
+		for(int i = 0; i < pixels.length; i++) {
+			this.pixels[i] = pixels[i];
+		}
+	}
+	
 	/**
 	 * 
 	 * @return raster of pixels

@@ -1,11 +1,14 @@
-package com.camoga.test4d.model;
+package com.camoga._4d.model;
 
+import com.camoga._4d.geom.VecNd;
 import com.camoga.engine.Engine;
+import com.camoga.engine.Renderable;
+import com.camoga.engine.Scene;
 import com.camoga.engine.Sprite;
+import com.camoga.engine.geom.Matrix4d;
 import com.camoga.engine.geom.Vec4d;
-import com.camoga.test4d.geom.VecNd;
 
-public class Polytope {
+public class Polytope implements Renderable {
 
 	public VecNd[] vertices;
 	public int[][] edges;
@@ -36,7 +39,7 @@ public class Polytope {
 		this.scale = scale;
 		this.dotSize = dotSize;
 		this.color = color;
-		this.sprite = new Sprite("/triangle.png");
+		this.sprite = new Sprite("/textures/triangle.png");
 		transform4d = new Vec4d[vertices.length];
 		for(int i = 0; i < vertices.length; i++) {
 			transform4d[i] = new Vec4d(vertices[i][0],vertices[i][1],vertices[i][2]);
@@ -45,10 +48,14 @@ public class Polytope {
 	}
 	
 	public void render(Engine main) {
-//		main.renderObj(g, transform4d, dotSize, color);
+		main.renderPoint(transform4d, dotSize, color);
 		if(faces!=null)
 		main.renderPolygons(transform4d, faces, textureCoords, sprite);
 		if(edges!=null)
 		main.renderHollowModel(transform4d, edges, 20, color);
+	}
+
+	public void transform(Matrix4d rotation, Scene scene) {
+		//TODO
 	}
 }

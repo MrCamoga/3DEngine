@@ -1,16 +1,17 @@
-package com.camoga.test4d;
+package com.camoga._4d.examples;
 
 import java.awt.Graphics;
 
+import com.camoga._4d.geom.MatrixNd;
+import com.camoga._4d.geom.VecNd;
+import com.camoga._4d.model.NSphere;
+import com.camoga._4d.model.Polytope;
 import com.camoga.engine.Engine;
+import com.camoga.engine.Maths;
 import com.camoga.engine.Sprite;
 import com.camoga.engine.geom.Vec4d;
 import com.camoga.engine.gfx.Screen;
-import com.camoga.mg.Test;
-import com.camoga.test4d.geom.MatrixNd;
-import com.camoga.test4d.geom.VecNd;
-import com.camoga.test4d.model.NCube;
-import com.camoga.test4d.model.Polytope;
+import com.camoga.engine.input.Key;
 /**
  * This is an example of a program made using this motor.
  * The objective of this little program is to optimize the three dimensional shadow
@@ -31,9 +32,12 @@ public class TestHighDim extends Engine {
 	Polytope tesseract;
 	Sprite sprite;
 	
-	//TODO method to create planes of rotation
-	//7 planes of rotation in 5D (plus the three 3D planes) 
-	double[] planes = new double[3];
+	//DONE method to create planes of rotation
+	
+	//Dimension
+	public int N = 4;
+
+	double[] planes = new double[Maths.choose(N, 2)-3];
 	
 	public TestHighDim() {
 		super();
@@ -41,8 +45,8 @@ public class TestHighDim extends Engine {
 		
 //		cam = new Camera4d(key);
 		
-		tesseract = new NCube(4, 25, 1, 0xffff0000);
-		
+//		tesseract = new NCube(4, 25, 1, 0xffff0000);
+		tesseract = new NSphere(null, null, null, 5, 1, 0xffff0000);
 		
 	}
 
@@ -50,9 +54,19 @@ public class TestHighDim extends Engine {
 	
 	boolean optimize = false;
 	
+	public void key(Key input) {
+		if(input.I) planes[0] += 0.01;
+		if(input.K) planes[0] -= 0.01;
+		if(input.J) planes[1] -= 0.01;
+		if(input.L) planes[1] += 0.01;
+		if(input.H) planes[2] += 0.01;
+		if(input.N) planes[2] -= 0.01;
+	}
+	
 	@Override
 	public void tick(double dt) {
 		super.tick(dt);
+		this.key(super.key);
 		if(key.ENTER) optimize = !optimize;
 		if(optimize)
 		for(int j = 0; j < 3; j++) {

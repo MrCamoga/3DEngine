@@ -32,6 +32,10 @@ public class Vec3 {
 		return this;
 	}
 	
+	public static Vec3 add(Vec3 v, Vec3 u) {
+		return new Vec3(v.x+u.x,v.y+u.y,v.z+u.z);
+	}
+	
 	public Vec3 sub(Vec3 v) {
 		x -= v.x;
 		y -= v.y;
@@ -44,6 +48,14 @@ public class Vec3 {
 		y /= s;
 		z /= s;
 		return this;
+	}
+	
+	public static Vec3 div(Vec3 v, double s) {
+		Vec3 result = new Vec3();
+		result.x = v.x/s;
+		result.y = v.y/s;
+		result.z = v.z/s;
+		return result;
 	}
 	
 	public static Vec3 sub(Vec3 a, Vec3 b) {
@@ -70,11 +82,25 @@ public class Vec3 {
 	public static Vec3 crossNorm(Vec3 a, Vec3 b, Vec3 c) {
 		Vec3 u = sub(a, b);
 		Vec3 v = sub(a, c);
-		return new Vec3(u.y*v.z-u.z*v.y,u.z*v.x-u.x*v.z,u.x*v.y-u.y*v.x).div(Math.sqrt(modSq(u)*modSq(v)));
+		return new Vec3(u.y*v.z-u.z*v.y,u.z*v.x-u.x*v.z,u.x*v.y-u.y*v.x).normalize();
 	}
 	
 	public static double dot(Vec3 u, Vec3 v) {
 		return u.x*v.x+u.y*v.y+u.z*v.z;
+	}
+	
+	public static Vec3 normalize(Vec3 u) {
+		double mod = u.mod();
+		return div(u, mod);
+	}
+	
+	public Vec3 normalize() {
+		div(mod());
+		return this;
+	}
+	
+	public double mod() {
+		return Math.sqrt(x*x+y*y+z*z);
 	}
 	
 	public static double dotNorm(Vec3 u, Vec3 v) {

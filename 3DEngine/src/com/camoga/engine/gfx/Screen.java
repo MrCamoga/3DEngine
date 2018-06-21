@@ -1,8 +1,8 @@
 package com.camoga.engine.gfx;
 
-import java.awt.Color;
 import java.util.Arrays;
 
+import com.camoga.engine.Color;
 import com.camoga.engine.Engine;
 import com.camoga.engine.LightSource;
 import com.camoga.engine.Sprite;
@@ -17,6 +17,7 @@ public class Screen {
 	
 	public int[] pixels;
 	public float[] depthBuffer;
+	public Integer[] faceIDbuffer;
 	
 	public Screen(int width, int height) {
 		this.width = width;
@@ -24,14 +25,16 @@ public class Screen {
 		
 		pixels = new int[width*height];
 		depthBuffer = new float[width*height];
+		faceIDbuffer = new Integer[width*height];
 	}
 	
 	/**
 	 * clears pixel array to be drawn again
 	 */
 	public void clear() {
-		background(0xff000000);
+		background(0xff30c4ff);
 		Arrays.fill(depthBuffer, Float.MAX_VALUE);
+		Arrays.fill(faceIDbuffer, null);
 	}
 	
 	/**
@@ -109,8 +112,10 @@ public class Screen {
 		x = a.x;
 		y = a.y;
 		for(int i = 1; i <= step; i++) {
-			if(!((int)x < 0 || (int)y < 0 || (int)x >= this.width || (int)y >= this.height)) 
+			if(!((int)x < 0 || (int)y < 0 || (int)x >= this.width || (int)y >= this.height)) { 
 				pixels[(int)x+(int)y*this.width] = color;
+				depthBuffer[(int)x+(int)y*this.width] = 0;
+			}
 			x += dx; 
 			y += dy;
 //				i += step > 0 ? 1:-1;
@@ -147,7 +152,7 @@ public class Screen {
 	 * @param bt second texture coord
 	 * @param ct third texture coord
 	 */
-	public void fillTriangle(Vec3 a, Vec3 b, Vec3 c, Point2D at, Point2D bt, Point2D ct, Sprite sprite) {
+	public void fillTriangle(Vec3 a, Vec3 b, Vec3 c, Point2D at, Point2D bt, Point2D ct, Sprite sprite, int faceID, boolean highlight) {
 		int xmin = min(a.x,b.x,c.x);
 		int ymin = min(a.y,b.y,c.y);
 		int xmax = max(a.x,b.x,c.x);
@@ -165,7 +170,7 @@ public class Screen {
 		
 		//pixel brightness
 		double Itotal = flatShading(a, b, c);
-		
+//		Itotal = 1;
 		
 		yLabel:for(int y = ymin; y <= ymax; y++) {
 			boolean xInside = false;
@@ -198,13 +203,19 @@ public class Screen {
 					int col = sprite.getPixels()[(xT+yT*sprite.width)];
 					if(col != ALPHA)
 					if(depthBuffer[i] > z) {
-						float[] hsb = Color.RGBtoHSB((col&0xff0000)>>16, (col&0xff00)>>8, (col&0xff), null);
-//						System.out.println(hsb[0]);
+						float[] hsl = Color.RGBtoHSL(col);
 						
-						hsb[2] *= (float)Itotal;
-						if(hsb[2]>1)hsb[2]=1;
-						pixels[i] = Color.HSBtoRGB(hsb[0], hsb[1], hsb[2]);
-						depthBuffer[i] = z;						
+						hsl[2] *= Itotal;
+						
+						//DONE change HSB to HSL
+						//FIXME black triangles do not illuminate
+						if(highlight) {
+							hsl[2] *= 1.3f;
+						}
+						if(hsl[2]>1)hsl[2]=1;
+						pixels[i] = Color.HSLtoRGB(hsl[0], hsl[1], hsl[2]);
+						depthBuffer[i] = z;
+						faceIDbuffer[i] = faceID;
 					}
 				} 
 				//Backtrack traversal
@@ -217,6 +228,7 @@ public class Screen {
 		}
 	}
 	
+	//DONE triangles with different lightning?
 	/**
 	 * Returns light intensity value for a triangle
 	 * @param a triangle's first vertex
@@ -225,24 +237,39 @@ public class Screen {
 	 * @return light intensity
 	 */
 	public double flatShading(Vec3 a, Vec3 b, Vec3 c) {
-		double Ka = 0.3;
+		double Ka = 0.4;
 		double Ia = 1;
 		double Iamb = Ka*Ia;
 		double Itotal = Iamb;
 		for(LightSource l : Engine.scene.getLights()) {
 			double Kd = 0.6;
-			double Id = 1;
-			Vec3 normal = Vec3.cross(b, a, c);
+			double I = 1;
+			double Ks = 1;
 			
-			double Idiff = (Kd*Id*Vec3.dotNorm(normal, l.transform));
+			Vec3 normal = Vec3.crossNorm(b, a, c);
+			if(Math.random()<0.01)
+			drawLine(a, Vec3.add(a, normal), 2, 0xffffff00);
+			
+			double dot = Vec3.dotNorm(normal, l.transform);
+			if(dot < 0) continue;
+			double Idiff = Kd*dot;
+			
+			Vec3 Rm = (normal.mul(dot*2)).sub(Vec3.normalize(l.transform));
+			double dot2 = Vec3.dotNorm(Rm,Vec3.sub(a,Engine.cam.pos));
+//			System.out.println(dot2);
+			
+			double Ispec = Ks*Math.pow(dot2,128);
+//			System.out.println(Ispec);
 			if(Idiff < 0) Idiff = 0;
-			Itotal += Idiff;
+			if(Ispec < 0) Ispec = 0;
+			Itotal += I*(Idiff+Ispec);
+//			System.out.println(Itotal);
 		}
-		if(Itotal > 1) Itotal = 1;
+//		if(Itotal > 1) Itotal = 1;
 		return Itotal;
 	}
 	
-	//TODO SPHERE AND TORUS MODEL
+	//DONE SPHERE AND TORUS MODEL
 	//FIXME
 	public int alphablending(int color1, int color2) {
 		float factor = (float)((color2&0xff000000) >> 24)/255f;

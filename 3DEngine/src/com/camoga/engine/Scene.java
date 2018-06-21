@@ -10,7 +10,6 @@ import com.camoga.engine.geom.Vec4d;
 import com.camoga.engine.input.Camera;
 import com.camoga.engine.model.HollowModel;
 import com.camoga.engine.model.Model;
-import com.camoga.test4d.model.Polytope;
 
 /**
  * This class is used to load, transform and pass the models to the renderer
@@ -20,41 +19,24 @@ import com.camoga.test4d.model.Polytope;
  */
 public class Scene {
 
-	private Camera cam;
+	public Camera cam;
 	private Engine main;
-	private List<HollowModel> hmodels = new ArrayList<HollowModel>();
-	private List<Model> polyhedra = new ArrayList<Model>();
-	private List<Polytope> polytope = new ArrayList<>();
+	private List<Renderable> models = new ArrayList<Renderable>();
+	
 	private List<LightSource> lights = new ArrayList<LightSource>();
 	
 	public Scene(Camera cam, Engine main) {
 		this.cam = cam;
 		this.main = main;
-		lights.add(new LightSource(0, 1, -1));
+		lights.add(new LightSource(0, -2, 0));
 	}
 	
 	/**
 	 * Add a model
 	 * @param model
 	 */
-	public void add(HollowModel model) {
-		hmodels.add(model);
-	}
-	
-	/**
-	 * Add a model
-	 * @param p
-	 */
-	public void add(Polytope p) {
-		polytope.add(p);
-	}
-	
-	/**
-	 * Add a model
-	 * @param model
-	 */
-	public void add(Model model) {
-		polyhedra.add(model);
+	public void add(Renderable model) {
+		models.add(model);
 	}
 	
 	/**
@@ -62,36 +44,18 @@ public class Scene {
 	 * 
 	 */
 	public void tick() {
-		for(HollowModel m:hmodels) {
-			for(int i = 0; i < m.vertices.size(); i++) {
-				m.transform.set(i, rotX(-cam.rot.x)
-						.multiply(rotY(-cam.rot.y))
-						.multiply(rotZ(-cam.rot.z))
-						.multiply(scale(m.scale))
-//						.multiply(translate(-cam.pos.x, -cam.pos.y, -cam.pos.z))
-						.multiply(m.vertices.get(i)));
-			}
+		Matrix4d rotation = rotX(-cam.rot.x)
+				.multiply(rotY(-cam.rot.y))
+				.multiply(rotZ(-cam.rot.z));
+		
+		for(Renderable r: models) {
+			r.transform(rotation, this);
 		}
 		
 		for(LightSource light : lights) {
-//			Vec4d t = rotX(-cam.rot.x)
-//					.multiply(rotY(-cam.rot.y))
-//					.multiply(rotZ(-cam.rot.z))
+//			Vec4d t = rotation
 //					.multiply(light.getDir());
 //			light.transform = new Vec3(t.x, t.y, t.z);
-		}
-		
-		for(Model m:polyhedra) {
-			for(int i = 0; i < m.vertices.length; i++) {
-				m.transform[i] = rotX(-cam.rot.x)
-						.multiply(rotY(-cam.rot.y))
-						.multiply(rotZ(-cam.rot.z))
-						.multiply(scale(m.scale))
-//						.multiply(translate(-cam.pos.x, -cam.pos.z, -cam.pos.z))
-//						.multiply(translate(m.pos.x, m.pos.y, m.pos.z))
-						.multiply(m.vertices[i]);
-			}
-//						.multiply(translate(-cam.pos.x, -cam.pos.y, -cam.pos.z))
 		}
 	}
 	
@@ -123,7 +87,7 @@ public class Scene {
 		});
 	}
 	
-	public Matrix4d scale(double s) {
+	public static Matrix4d scale(double s) {
 		return new Matrix4d(new double[][]{
 			{s,0,0,0},
 			{0,s,0,0},
@@ -132,7 +96,7 @@ public class Scene {
 		});
 	}
 	
-	public Matrix4d translate(double dx, double dy, double dz) {
+	public static Matrix4d translate(double dx, double dy, double dz) {
 		return new Matrix4d(new double[][] {
 			{1,0,0,dx},
 			{0,1,0,dy},
@@ -146,12 +110,8 @@ public class Scene {
 	 * @param g 
 	 */
 	public void render(Graphics g) {
-		for(HollowModel m: hmodels) {
-			main.renderPoint(g,m.transform.toArray(new Vec4d[] {}), m.dotSize, m.color);	
-		}
-		for(Model p: polyhedra) {
-//			main.renderPolygons(g, p.transform, p.faces, p.textureCoords, p.color);
-			p.render(main, g);
+		for(Renderable m: models) {
+			m.render(main);
 		}
 	}
 	
