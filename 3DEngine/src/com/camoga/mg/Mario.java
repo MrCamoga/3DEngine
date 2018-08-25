@@ -3,9 +3,10 @@ package com.camoga.mg;
 import java.awt.Graphics;
 
 import com.camoga.engine.Engine;
-import com.camoga.engine.Sprite;
 import com.camoga.engine.geom.Vec3;
 import com.camoga.engine.gfx.Screen;
+import com.camoga.engine.gfx.Sprite;
+import com.camoga.engine.model.Material;
 import com.camoga.engine.model.Model;
 
 /**
@@ -53,19 +54,31 @@ public class Mario extends Engine {
 				{0,0},{0,1},{1,0},{0,0},{0,1},{1,0},{0,0},{0,1},{1,0},{0,0},{0,1},{1,0},
 		};
 		
-		Sprite sprite = new Sprite("/wic.png");
-		icosahedron = new Model(vertices, faces, tc, 2, sprite);
-		scene.add(icosahedron);
+		Sprite sprite = new Sprite("/normals/brick.png");
+		Sprite normal = new Sprite("/normals/cubenormal.png");
+//		icosahedron = new Model(vertices, faces, tc, 2, sprite, Material.brick);
+//		scene.add(icosahedron);
+		Model cube = new Model(new double[][]{
+			{-1,-1,-1},{-1,-1,1},
+			{-1,1,-1},{-1,1,1},
+			{1,-1,-1},{1,-1,1},
+			{1,1,-1},{1,1,1},
+		}, new int[][]{
+			{2,6,4,0},{0,4,5,1},{1,5,7,3},{3,7,6,2},{3,2,0,1},{6,7,5,4},
+		}, new double[][] {{0,0},{0,1},{1,1},{1,0},{0,0},{0,1},{1,1},{1,0},{0,0},{0,1},{1,1},{1,0},
+			{0,0},{0,1},{1,1},{1,0},{0,0},{0,1},{1,1},{1,0},{0,0},{0,1},{1,1},{1,0},}, 1,
+				normal, sprite, Material.brick);
+		scene.add(cube);
 	}
 	
 	public void tick(double dt) {
 		super.tick(dt);
-		pos.add(velocity.mul(dt));
-		velocity.add(gravity.mul(dt));
+//		pos.add(velocity.mul(dt));
+//		velocity.add(gravity.mul(dt));
 		
-		icosahedron.translate(pos);
+//		icosahedron.translate(pos);
 		
-		collide();
+//		collide();
 	}
 	
 	public void collide() {

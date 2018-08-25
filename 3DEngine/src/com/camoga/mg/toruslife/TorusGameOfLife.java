@@ -3,10 +3,11 @@ package com.camoga.mg.toruslife;
 import java.awt.Graphics;
 
 import com.camoga.engine.Engine;
-import com.camoga.engine.Sprite;
+import com.camoga.engine.geom.Vec3;
 import com.camoga.engine.gfx.Screen;
-import com.camoga.engine.model.Sphere;
-import com.camoga.engine.model.Torus;
+import com.camoga.engine.gfx.Sprite;
+import com.camoga.engine.model.Material;
+import com.camoga.engine.model.models.Torus;
 import com.camoga.mg.toruslife.life.GameOfLife;
 
 /**
@@ -29,15 +30,17 @@ public class TorusGameOfLife extends Engine {
 		int width = 80;
 		int height = 40;
 		life = new GameOfLife(false, width, height);
-		torus = new Torus(3, 2, width, height, 1, new Sprite(width,height,0xffff0000));
+		torus = new Torus(3, 2, width, height, 1, null, new Sprite(width,height,0xff000000), Material.plastic);
 		scene.add(torus);
-//		scene.add(new Sphere(5, 25, 25, 1, new Sprite(1,1,0xffff0000)));
 	}
 	
 	public void tick(double dt) {
 		super.tick(dt);
 		if(Engine.clock%1==0)
 		life.tick();
+//		Torus t = ((Torus)scene.getSelectedModel());
+//		if(t!=null)
+//		System.out.println(t.sprite.getPixels()[0]);
 	}
 	
 	public static void main(String[] args) {
@@ -46,7 +49,7 @@ public class TorusGameOfLife extends Engine {
 
 	@Override
 	public void predraw(Screen screen) {
-		torus.sprite.set(life.level.getImage(true,0xff0000));
+		torus.sprite.set(life.level.getImage(true,0xffffff));
 	}
 
 	@Override

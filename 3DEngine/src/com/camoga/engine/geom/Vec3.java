@@ -12,8 +12,10 @@ public class Vec3 {
 		this.z = z;
 	}
 	
-	public Vec3() {
-		
+	public Vec3(Vec4d v4) {
+		x = v4.x;
+		y = v4.y;
+		z = v4.z;
 	}
 	public Vec3(int[] pos) {
 		this(pos[0], pos[1], pos[2]);
@@ -25,6 +27,8 @@ public class Vec3 {
 	
 
 	
+	public Vec3() {}
+
 	public Vec3 add(Vec3 v) {
 		x += v.x;
 		y += v.y;
@@ -40,6 +44,13 @@ public class Vec3 {
 		x -= v.x;
 		y -= v.y;
 		z -= v.z;
+		return this;
+	}
+	
+	public Vec3 sub(double v) {
+		x -= v;
+		y -= v;
+		z -= v;
 		return this;
 	}
 	
@@ -66,6 +77,10 @@ public class Vec3 {
 		return new Vec3(x*s, y*s, z*s);
 	}
 	
+	public static Vec3 mul(Vec3 v, double s) {
+		return new Vec3(v.x*s, v.y*s, v.z*s);
+	}
+	
 	/**
 	 * 
 	 * @param a point
@@ -74,15 +89,23 @@ public class Vec3 {
 	 * @return cross product given three points
 	 */
 	public static Vec3 cross(Vec3 a, Vec3 b, Vec3 c) {
-		Vec3 u = sub(a, b);
+		Vec3 u = sub(b, a);
 		Vec3 v = sub(a, c);
 		return new Vec3(u.y*v.z-u.z*v.y,u.z*v.x-u.x*v.z,u.x*v.y-u.y*v.x);
 	}
 	
 	public static Vec3 crossNorm(Vec3 a, Vec3 b, Vec3 c) {
-		Vec3 u = sub(a, b);
-		Vec3 v = sub(a, c);
-		return new Vec3(u.y*v.z-u.z*v.y,u.z*v.x-u.x*v.z,u.x*v.y-u.y*v.x).normalize();
+		Vec3 u = sub(c, a);
+		Vec3 v = sub(b,a);
+		return cross(u, v).normalize();
+	}
+	
+	public static Vec3 cross(Vec3 u, Vec3 v) {
+		return new Vec3(u.y*v.z-u.z*v.y,u.z*v.x-u.x*v.z,u.x*v.y-u.y*v.x);
+	}
+	
+	public static Vec3 crossNorm(Vec3 u, Vec3 v) {
+		return cross(u, v).normalize();
 	}
 	
 	public static double dot(Vec3 u, Vec3 v) {
@@ -111,6 +134,10 @@ public class Vec3 {
 		return (a.x*a.x+a.y*a.y+a.z*a.z);
 	}
 	
+	public String toString() {
+		return "x: " + x+", y: " + y + ", z: " + z; 
+	}
+	
 	public double getDistance(Vec4d point) {
 		return (double)sqrt(pow(point.x-x,2)+pow(point.y-y,2)+pow(point.z-z,2));
 	}
@@ -125,5 +152,9 @@ public class Vec3 {
 	
 	public double getDistanceSq(Vec3 point) {
 		return (double)(pow(point.x-x,2)+pow(point.y-y,2)+pow(point.z-z,2));
+	}
+	
+	public double getDistance(Vec3 point) {
+		return sqrt(getDistanceSq(point));
 	}
 }

@@ -19,8 +19,8 @@ public class Camera {
 	 */
 	public Camera(Key input) {
 		this.input = input;
-		pos = new Vec3(0,0,-20);
-		rot = new Vec3();
+		pos = new Vec3(0,0,-15);
+		rot = new Vec3(0,0,0);
 	}
 
 	//TODO Euler angles
@@ -42,12 +42,12 @@ public class Camera {
 		if(input.A) rot.y-=0.01;
 		if(input.D) rot.y+=0.01;
 
-		if(input.I) Engine.scene.getLights().get(0).transform.z += 0.1;
-		if(input.K) Engine.scene.getLights().get(0).transform.z -= 0.1;
-		if(input.J) Engine.scene.getLights().get(0).transform.x -= 0.1;
-		if(input.L) Engine.scene.getLights().get(0).transform.x += 0.1;
-		if(input.H) Engine.scene.getLights().get(0).transform.y += 0.1;
-		if(input.N) Engine.scene.getLights().get(0).transform.y -= 0.1;
+		if(input.I) Engine.scene.getLights().get(0).pos.z += 0.1;
+		if(input.K) Engine.scene.getLights().get(0).pos.z -= 0.1;
+		if(input.J) Engine.scene.getLights().get(0).pos.x -= 0.1;
+		if(input.L) Engine.scene.getLights().get(0).pos.x += 0.1;
+		if(input.H) Engine.scene.getLights().get(0).pos.y += 0.1;
+		if(input.N) Engine.scene.getLights().get(0).pos.y -= 0.1;
 		
 		//normalize the angles
 		rot.z%=Math.PI*2;
@@ -68,6 +68,11 @@ public class Camera {
 		g.drawString("xθ: " + rot.x, xo+10, yo+62);
 		g.drawString("yθ: " + rot.y, xo+10, yo+77);
 		g.drawString("zθ: " + rot.z, xo+10, yo+92);
+		if(Engine.scene.getLights().size() > 0) {
+			g.drawString("Light source x: " +  Engine.scene.getLights().get(0).pos.x, xo+10, yo+107);
+			g.drawString("Light source y: " +  Engine.scene.getLights().get(0).pos.y, xo+10, yo+122);
+			g.drawString("Light source z: " +  Engine.scene.getLights().get(0).pos.z, xo+10, yo+137);			
+		}
 	}
 	
 	/**

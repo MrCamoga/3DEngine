@@ -12,9 +12,10 @@ public class Mouse implements MouseListener, MouseMotionListener {
 
 	private Engine main;
 	
-	public Point2D pos = new Point(0,0);
+	public static Point2D pos = new Point(0,0);
 	
-	public Integer face = null;
+	public static Integer face = null;
+	public static boolean dragging = false;
 	
 	public Mouse(Engine main) {
 		this.main = main;
@@ -22,18 +23,19 @@ public class Mouse implements MouseListener, MouseMotionListener {
 		main.addMouseMotionListener(this);
 	}
 	
+	public void tick() {
+		face = main.screen.faceIDbuffer[(int)(pos.getX()/Engine.SCALE)+(int)(pos.getY()/Engine.SCALE)*main.screen.width];
+	}
+	
 	public void mouseClicked(MouseEvent e) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	public void mouseEntered(MouseEvent e) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	public void mouseExited(MouseEvent e) {
-		// TODO Auto-generated method stub
 		
 	}
 
@@ -43,18 +45,18 @@ public class Mouse implements MouseListener, MouseMotionListener {
 	}
 
 	public void mouseReleased(MouseEvent e) {
-		// TODO Auto-generated method stub
+		dragging = false;
 		
 	}
 
 	public void mouseDragged(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
+		pos = e.getPoint();
+		dragging = true;		
 	}
 
+	//DONE highlighted face updates slowly at low framerate and flickers
 	public void mouseMoved(MouseEvent e) {
 		pos = e.getPoint();
-		face = main.screen.faceIDbuffer[(int)(pos.getX()/Engine.SCALE)+(int)(pos.getY()/Engine.SCALE)*main.screen.width];
 	}
 
 }

@@ -1,26 +1,31 @@
 package com.camoga._4d.model;
 
 import com.camoga.engine.Maths;
+import com.camoga.engine.model.Material;
 
 public class NCube extends Polytope {
 	
 	public NCube(int N, double dotSize, double scale, int color) {
-		super(NdimCubeVertices(N), NdimCubeEdges(N), NdimCubeFaces(N), NdimCubeTC(N), dotSize, scale, color);
+		super(NdimCubeVertices(N), 
+				NdimCubeEdges(N), 
+				NdimCubeFaces(N), 
+				NdimCubeTC(N), 
+				dotSize, scale, color, Material.brick);
 		this.N = N;
 	}	
 	
 	/**
 	 * 
 	 * @param n dimension
-	 * @return array of texture coordinates for every face on the N-cube
+	 * @return array of texture coordinates for every face on the N-brick
 	 */
 	private static double[][] NdimCubeTC(int n) {
 		double[][] tc = new double[(int) (Math.pow(2, n-2)*Maths.factorial(n)/Maths.factorial(n-2)/Maths.factorial(2))*4][];
 		for(int i = 0; i < tc.length; i+=4) {
 			tc[i] = new double[]{0,0};
-			tc[i+1] = new double[]{1,0};
-			tc[i+2] = new double[]{1,1};
-			tc[i+3] = new double[]{0,1};
+			tc[i+1] = new double[]{0.999,0};
+			tc[i+2] = new double[]{0.999,.999};
+			tc[i+3] = new double[]{0,.999};
 		}
 		return tc;
 	}
@@ -45,7 +50,7 @@ public class NCube extends Polytope {
 	/**
 	 * 
 	 * @param n dimension
-	 * @return array of faces of a N-cube
+	 * @return array of faces of a N-brick
 	 */
 	private static int[][] NdimCubeFaces(int n) {
 		int numOfFaces = (int) (Math.pow(2, n-2)*Maths.factorial(n)/Maths.factorial(n-2)/Maths.factorial(2));

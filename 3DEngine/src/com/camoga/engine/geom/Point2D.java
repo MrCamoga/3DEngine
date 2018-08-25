@@ -43,6 +43,10 @@ public class Point2D {
 		this(pos[0], pos[1]);
 	}
 	
+	public static Point2D sub(Point2D a, Point2D b) {
+		return new Point2D(b.x-a.x, b.y-a.y);
+	}
+	
 	/**
 	 * 
 	 * @param point

@@ -3,9 +3,10 @@ package com.camoga.mg;
 import java.awt.Graphics;
 
 import com.camoga.engine.Engine;
-import com.camoga.engine.Sprite;
 import com.camoga.engine.gfx.Screen;
+import com.camoga.engine.model.Material;
 import com.camoga.engine.model.Model;
+import com.camoga.engine.model.models.Mesh;
 
 /**
  * This is another example. I've rendered a square mesh.
@@ -14,14 +15,14 @@ import com.camoga.engine.model.Model;
  * @author MrCamoga
  *
  */
-public class Mesh extends Engine {
+public class MeshTest extends Engine {
 
 	public Model mesh;
 	
 	int width = 50;
 	int height = 50;
 	
-	public Mesh() {
+	public MeshTest() {
 		super();
 		UPS = 60;
 		cam.rot.x = Math.PI+0.4;
@@ -30,29 +31,7 @@ public class Mesh extends Engine {
 		cam.pos.y = 0;
 		cam.pos.z = -50;		
 		
-		double[][] vertices = new double[height*width][];
-		for(int i = 0; i < height; i++) {
-			for(int j = 0; j < width; j++) {
-				vertices[i+j*width] = new double[] {i-width/2,0,j-height/2};
-			}
-		}
-		
-		int[][] faces = new int[(width-1)*(height-1)][];
-		for(int i = 0; i < height-1; i++) {
-			for(int j = 0; j < width-1; j++) {
-				faces[j+i*(width-1)] = new int[]{j+i*width,j+(i+1)*width,j+(i+1)*width+1,j+1+i*width};
-			}
-		}
-		
-		double[][] textureCoords = new double[faces.length*4][];
-		for(int i = 0; i < textureCoords.length/4; i++) {
-			textureCoords[4*i] = new double[] {0,0};
-			textureCoords[4*i+1] = new double[] {1,0};
-			textureCoords[4*i+2] = new double[] {1,1};
-			textureCoords[4*i+3] = new double[] {0,1};
-		}
-		
-		mesh = new Model(vertices, faces, textureCoords, 0.5, new Sprite(16, 16, 0xff23c5e3));
+		mesh = new Mesh(width, height, 0.5, Material.brick);
 		scene.add(mesh);
 	}
 	
@@ -80,7 +59,7 @@ public class Mesh extends Engine {
 	}
 	
 	public static void main(String[] args) {
-		new Mesh().start();
+		new MeshTest().start();
 	}
 
 	@Override

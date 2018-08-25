@@ -1,13 +1,19 @@
 package com.camoga._4d.model;
 
-import static java.lang.Math.*;
+import static java.lang.Math.PI;
+import static java.lang.Math.cos;
+import static java.lang.Math.random;
+import static java.lang.Math.sin;
 
 import com.camoga.engine.Engine;
+import com.camoga.engine.model.Material;
 
 public class NSphere extends Polytope {
 
 	public NSphere(int[][] edges, int[][] faces, double[][] textureCoords, double dotSize, double scale, int color) {
-		super(vertices(2000), edges, faces, textureCoords, dotSize, scale, color);
+		super(vertices(2000), 
+				edges, 
+				faces, textureCoords, dotSize, scale, color, Material.brick);
 	}
 
 	public static double[][] vertices(int num) {

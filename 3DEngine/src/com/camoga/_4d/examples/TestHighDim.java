@@ -4,13 +4,13 @@ import java.awt.Graphics;
 
 import com.camoga._4d.geom.MatrixNd;
 import com.camoga._4d.geom.VecNd;
-import com.camoga._4d.model.NSphere;
+import com.camoga._4d.model.NCube;
 import com.camoga._4d.model.Polytope;
 import com.camoga.engine.Engine;
 import com.camoga.engine.Maths;
-import com.camoga.engine.Sprite;
 import com.camoga.engine.geom.Vec4d;
 import com.camoga.engine.gfx.Screen;
+import com.camoga.engine.gfx.Sprite;
 import com.camoga.engine.input.Key;
 /**
  * This is an example of a program made using this motor.
@@ -20,7 +20,7 @@ import com.camoga.engine.input.Key;
  * 
  * Most of the code in here can be used to manipulate even higher dimensional polytopes.
  * However, I've still haven't been able to find a way of calculating the area/volume of a projection; 
- * so it cannot optimize the volume of a 5-cube, 6-cube, and so on.
+ * so it cannot optimize the volume of a 5-brick, 6-brick, and so on.
  * 
  * 
  * @author MrCamoga
@@ -45,8 +45,8 @@ public class TestHighDim extends Engine {
 		
 //		cam = new Camera4d(key);
 		
-//		tesseract = new NCube(4, 25, 1, 0xffff0000);
-		tesseract = new NSphere(null, null, null, 5, 1, 0xffff0000);
+		tesseract = new NCube(4, 25, 1, 0xffff0000);
+//		tesseract = new NSphere(null, null, null, 5, 1, 0xffff0000);
 		
 	}
 
@@ -200,11 +200,11 @@ public class TestHighDim extends Engine {
 	 * @return homogeneous vector of projection
 	 */
 	public Vec4d vec4projection(VecNd vecN, Integer axis1, Integer axis2, Integer axis3) {
-		Vec4d vec = rot(-cam.rot.x, 1, 2, 4)
+		Vec4d v4 = rot(-cam.rot.x, 1, 2, 4)
 				.multiply(rot(-cam.rot.y, 0, 2, 4))
 				.multiply(rot(-cam.rot.z, 0, 1, 4))
 				.multiply(new Vec4d(axis1 == null ? 0:vecN.xs[axis1], axis2==null ? 0:vecN.xs[axis2], axis3 == null ? 0:vecN.xs[axis3], vecN.w0));
-		return vec;
+		return v4;
 	}
 	
 	public static void main(String[] args) {

@@ -14,9 +14,11 @@ import com.camoga.engine.geom.Point2D;
 import com.camoga.engine.geom.Vec3;
 import com.camoga.engine.geom.Vec4d;
 import com.camoga.engine.gfx.Screen;
+import com.camoga.engine.gfx.Sprite;
 import com.camoga.engine.input.Camera;
 import com.camoga.engine.input.Key;
 import com.camoga.engine.input.Mouse;
+import com.camoga.engine.model.Material;
 
 /**
  * Main class of the Engine.
@@ -108,6 +110,7 @@ public abstract class Engine extends Canvas implements Runnable {
 		clock++;
 		time += delta;
 		key.tick();
+		mouse.tick();
 		cam.tick();
 		scene.tick();
 		FOCAL = 700/SCALE;
@@ -128,6 +131,8 @@ public abstract class Engine extends Canvas implements Runnable {
 		faceID = 0;
 		for(int i = 0; i < pixels.length; i++) {
 			pixels[i] = screen.pixels[i];
+//			pixels[i] = (int) (screen.depthBuffer[i]*255f)*0x10101;
+//			pixels[i] = (int) (screen.faceIDbuffer[i]==null? 0:screen.faceIDbuffer[i]/6400.0f*0xffffff);
 		}
 		g.drawImage(image, 0, 0, (int)DIMENSION.getWidth(), (int)DIMENSION.getHeight(), null);
 		g.drawImage(image2, 0, 0, (int)DIMENSION.getWidth(), (int)DIMENSION.getHeight(),null);
@@ -169,7 +174,7 @@ public abstract class Engine extends Canvas implements Runnable {
 			double distance = cam.pos.getDistance(vertices[i].normalize());
 			double apparentSize = dotSize/distance;
 			if(apparentSize < 2) apparentSize = 2;
-			screen.drawPoint((int)pos[i].x, (int)pos[i].y, pos[i].z, (int)apparentSize, color);
+			screen.drawPoint(pos[i], (int)apparentSize, color);
 			
 //			Graphics2D g2d = image2.createGraphics();
 //			g2d.setColor(new Color(0xff, 0xff, 0xff, 0xff));
@@ -194,11 +199,6 @@ public abstract class Engine extends Canvas implements Runnable {
 					draw = false;
 					break;
 				}
-//				
-//				double distance = cam.pos.getDistance(vec);
-//				double apparentSize = dotSize/distance;
-//				if(apparentSize < 2) apparentSize = 2;
-//				screen.drawPoint(xp, yp, (int) Z, (int)apparentSize, color);
 			}
 			if(draw) {
 				screen.drawLine(pos[edges[i][0]], pos[edges[i][1]], (int)lineSize, color);
@@ -216,40 +216,38 @@ public abstract class Engine extends Canvas implements Runnable {
 	 * @param textureCoords coordinates of the texture for each vertex
 	 * @param color ???
 	 */
-	public void renderPolygons(Vec4d[] vertices, int[][] faces, double[][] textureCoords, Sprite sprite) {
+	public void renderPolygons(Vec4d[] vertices, int[][] faces, double[][] textureCoords, Sprite normal, Sprite sprite, Vec3[] vertexColor, Material mat) {
+		//Compute screen coordinates for all vertices
 		Vec3[] pos = worldToScreen(vertices);
-		int index = 0;
+		int texIndex = 0;
 		for(int i = 0; i < faces.length; i++) {
 //			sprite = new Sprite(1,1,(int) (0xff000000 + 0xffffff*(double)i/faces.length));
+			boolean draw = true;
 			//Decompose face into triangles (vertices - 2 = num of triangles)
-//				pos = new int[faces[i].length][3];
-				boolean draw = true;
-				//Compute x, y and z position with respect to the camera of all the points in a face
+			for(int n = 0; n < faces[i].length; n++) {
 				
-				for(int n = 0; n < faces[i].length; n++) {
-					
-					if(pos[faces[i][n]].z <= 0) {
-						draw = false;
-						break;
-					};
-					
-				}
-			for(int j = 0; j < faces[i].length-2; j++) {
-				if(draw) {
-//					g.setColor(new Color((int) (color*Math.log(i+2)*(i*i-i-1))));
-					screen.fillTriangle(
-							pos[faces[i][0]], pos[faces[i][j+1]], pos[faces[i][j+2]], 
-							new Point2D(textureCoords[index]), new Point2D(textureCoords[index+1+j]), new Point2D(textureCoords[index+2+j]),
-							sprite,faceID,mouse.face != null && faceID==mouse.face);				
+				if(pos[faces[i][n]].z <= 0) {
+					draw = false;
+					break;
+				};
 				
-				}
 			}
-			index+=faces[i].length;
+			
+			for(int j = 0; j < faces[i].length-2; j++) {
+				if(!draw) break;
+//				draw = 
+				screen.fillTriangle(new Vec3[] {pos[faces[i][0]],pos[faces[i][j+1]],pos[faces[i][j+2]]},
+				new Vec3[] {new Vec3(vertices[faces[i][0]]), new Vec3(vertices[faces[i][j+1]]), new Vec3(vertices[faces[i][j+2]])}, 
+				new Point2D(textureCoords[texIndex]), new Point2D(textureCoords[texIndex+1+j]), new Point2D(textureCoords[texIndex+2+j]), 
+				normal, sprite, vertexColor[faces[i][0]],vertexColor[faces[i][j+1]],vertexColor[faces[i][j+2]],
+				faceID, Mouse.face != null && faceID==Mouse.face, true, mat);				
+			}
+			texIndex+=faces[i].length;
 			faceID++;
 		}
 	}
 	
-	public Vec3[] worldToScreen(Vec4d[] vertices) {
+	public static Vec3[] worldToScreen(Vec4d ... vertices) {
 		Vec3[] pos = new Vec3[vertices.length];
 		
 		for(int i = 0; i < pos.length; i++) {

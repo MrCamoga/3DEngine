@@ -34,12 +34,60 @@ public class Level {
 		pixels = new int[width*height];
 		newpixels = new int[width*height];
 		
-//		pixels[5] = 1;
-//		pixels[6+width] = 1;
-//		pixels[7+width] = 1;
-//		pixels[5+2*width] = 1;
-//		pixels[6+2*width] = 1;
-		randomInit();
+//		randomInit();
+		loadPattern(Pattern.GLIDER, 0, 0);
+		loadPattern(Pattern.GLIDER, 10, 0);
+		loadPattern(Pattern.GLIDER, 20, 0);
+		loadPattern(Pattern.GLIDER, 30, 0);
+		loadPattern(Pattern.GLIDER, 40, 0);
+		loadPattern(Pattern.GLIDER, 50, 0);
+		loadPattern(Pattern.GLIDER, 60, 0);
+		loadPattern(Pattern.GLIDER, 70, 0);
+		
+		loadPattern(Pattern.GLIDER, 0, 7);
+		loadPattern(Pattern.GLIDER, 10, 7);
+		loadPattern(Pattern.GLIDER, 20, 7);
+		loadPattern(Pattern.GLIDER, 30, 7);
+		loadPattern(Pattern.GLIDER, 40, 7);
+		loadPattern(Pattern.GLIDER, 50, 7);
+		loadPattern(Pattern.GLIDER, 60, 7);
+		loadPattern(Pattern.GLIDER, 70, 7);
+		
+		loadPattern(Pattern.GLIDER, 0, 14);
+		loadPattern(Pattern.GLIDER, 10, 14);
+		loadPattern(Pattern.GLIDER, 20, 14);
+		loadPattern(Pattern.GLIDER, 30, 14);
+		loadPattern(Pattern.GLIDER, 40, 14);
+		loadPattern(Pattern.GLIDER, 50, 14);
+		loadPattern(Pattern.GLIDER, 60, 14);
+		loadPattern(Pattern.GLIDER, 70, 14);
+		
+		loadPattern(Pattern.GLIDER, 0, 21);
+		loadPattern(Pattern.GLIDER, 10, 21);
+		loadPattern(Pattern.GLIDER, 20, 21);
+		loadPattern(Pattern.GLIDER, 30, 21);
+		loadPattern(Pattern.GLIDER, 40, 21);
+		loadPattern(Pattern.GLIDER, 50, 21);
+		loadPattern(Pattern.GLIDER, 60, 21);
+		loadPattern(Pattern.GLIDER, 70, 21);
+		
+		loadPattern(Pattern.GLIDER, 0, 28);
+		loadPattern(Pattern.GLIDER, 10, 28);
+		loadPattern(Pattern.GLIDER, 20, 28);
+		loadPattern(Pattern.GLIDER, 30, 28);
+		loadPattern(Pattern.GLIDER, 40, 28);
+		loadPattern(Pattern.GLIDER, 50, 28);
+		loadPattern(Pattern.GLIDER, 60, 28);
+		loadPattern(Pattern.GLIDER, 70, 28);
+		
+		loadPattern(Pattern.GLIDER, 0, 35);
+		loadPattern(Pattern.GLIDER, 10, 35);
+		loadPattern(Pattern.GLIDER, 20, 35);
+		loadPattern(Pattern.GLIDER, 30, 35);
+		loadPattern(Pattern.GLIDER, 40, 35);
+		loadPattern(Pattern.GLIDER, 50, 35);
+		loadPattern(Pattern.GLIDER, 60, 35);
+		loadPattern(Pattern.GLIDER, 70, 35);
 	}
 	
 	public void randomInit() {
@@ -80,6 +128,20 @@ public class Level {
 		}
 		
 		return total;
+	}
+	
+	public void loadPattern(int[][] pattern, int xo, int yo) {
+		for(int y = 0; y < pattern.length; y++) {
+			int ya = y + yo;
+			for(int x = 0; x < pattern[y].length; x++) {
+				int xa = x + xo;
+				pixels[indexOf(xa, ya)] = pattern[y][x];
+			}
+		}
+	}
+	
+	public int indexOf(int x, int y) {
+		return (x+width)%width + (y+height)%height*width;
 	}
 	
 	public int getState(int x, int y) {

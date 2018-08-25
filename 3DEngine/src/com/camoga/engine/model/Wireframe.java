@@ -5,10 +5,10 @@ import java.util.ArrayList;
 import com.camoga.engine.Engine;
 import com.camoga.engine.Renderable;
 import com.camoga.engine.Scene;
-import com.camoga.engine.geom.Matrix4d;
+import com.camoga.engine.geom.Matrix;
 import com.camoga.engine.geom.Vec4d;
 
-public class HollowModel implements Renderable {
+public class Wireframe implements Renderable {
 
 	public ArrayList<Vec4d> vertices = new ArrayList<Vec4d>();
 	public ArrayList<Vec4d> transform = new ArrayList<Vec4d>();
@@ -16,7 +16,7 @@ public class HollowModel implements Renderable {
 	public double scale;
 	public double dotSize;
 	
-	public HollowModel(double[][] vertices, double scale, double dotSize, int color) {
+	public Wireframe(double[][] vertices, double scale, double dotSize, int color) {
 		this.color = color;
 		for(double[] v : vertices) {
 			this.vertices.add(new Vec4d(v[0],v[1],v[2]));
@@ -33,9 +33,9 @@ public class HollowModel implements Renderable {
 		transform.add(new Vec4d(x,y,z));
 	}
 	
-	public void transform(Matrix4d rotation, Scene scene) {
+	public void transform(Matrix rotation, Scene scene) {
 		for(int i = 0; i < vertices.size(); i++) {
-			transform.set(i, rotation.multiply(Scene.scale(scale))
+			transform.set(i, rotation.scale(scale)
 //					.multiply(Scene.translate(-scene.cam.pos.x, -scene.cam.pos.y, -scene.cam.pos.z))
 					.multiply(vertices.get(i)));
 		}

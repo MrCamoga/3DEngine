@@ -1,4 +1,4 @@
-package com.camoga.engine.model;
+package com.camoga.engine.model.models;
 
 import static java.lang.Math.PI;
 import static java.lang.Math.cos;
@@ -7,7 +7,9 @@ import static java.lang.Math.sin;
 import java.awt.Graphics;
 
 import com.camoga.engine.Engine;
-import com.camoga.engine.Sprite;
+import com.camoga.engine.gfx.Sprite;
+import com.camoga.engine.model.Material;
+import com.camoga.engine.model.Model;
 
 public class Sphere extends Model {
 
@@ -19,8 +21,10 @@ public class Sphere extends Model {
 	 * @param scale 
 	 * @param sprite texture
 	 */
-	public Sphere(double R, int longNum, int shortNum, double scale, Sprite sprite) {
-		super(vertices(longNum, shortNum, R), faces(longNum, shortNum), quadTexCoords(longNum,shortNum), scale, sprite);
+	public Sphere(double R, int longNum, int shortNum, double scale, Sprite normal, Sprite sprite) {
+		super(vertices(longNum, shortNum, R), 
+				faces(longNum, shortNum), 
+				quadTexCoords(longNum,shortNum), scale, normal, sprite, Material.brick);
 	}
 	
 	private static double[][] vertices(int longitude, int latitude, double R) {

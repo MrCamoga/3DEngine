@@ -1,4 +1,6 @@
-package com.camoga.engine;
+package com.camoga.engine.gfx;
+
+import com.camoga.engine.geom.Vec3;
 
 public class Color {
 	public static float[] RGBtoHSL(int rgb) {
@@ -14,18 +16,18 @@ public class Color {
 		if(M==r) Hp = (g-b)/C % 6;
 		else if (M==g) Hp = (b-r)/C + 2;
 		else if(M==b) Hp = (r-g)/C + 4;
-		
+
 		float H = Hp*60f;
 		float L = (M+m)*0.5f;
-		float S = L == 1 ? 0:(C/(1-Math.abs(2*L-1)));
-		
+		float S = C == 0 ? 0:(L<=0.5 ? (C/(2*L)):(C/(2-2*L)));
+
 //		System.out.println(r+","+g+","+b+": " + H +","+S+","+L);
 		return new float[] {H,S,L};
 	}
 	
 	public static int HSLtoRGB(float h, float s, float l) {
 		float C = (1-Math.abs(2*l-1))*s;
-		float Hp = h/60.0f;
+		float Hp = ((h+360)%360)/60.0f;
 		float X = C*(1-Math.abs((Hp%2)-1));
 		
 		float r = 0, g = 0, b = 0;
@@ -50,8 +52,15 @@ public class Color {
 		return (0xff << 24) | ((int)((r+m)*0xff)<<16) | ((int)((g+m)*0xff)<<8) | (int)((b+m)*0xff);
 	}
 	
+	public static Vec3 RGB(int rgb) {
+		return new Vec3(((rgb&0xff0000)>>16),(rgb&0xff00)>>8,rgb&0xff).div(255.0);
+	}
+	
 	public static void main(String[] args) {
-		float[] hsl = RGBtoHSL(0xffa0a424);
-		System.out.println(HSLtoRGB(hsl[0], hsl[1], hsl[2]));
+		float[] hsl = RGBtoHSL(0xff000000);
+		int color = HSLtoRGB(hsl[0], hsl[1], hsl[2]+0.5f);
+		System.out.println((color&0xff0000)>>16);
+		System.out.println((color&0xff00)>>8);
+		System.out.println(color&0xff);
 	}
 }
