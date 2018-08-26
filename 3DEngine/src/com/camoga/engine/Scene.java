@@ -32,7 +32,7 @@ public class Scene {
 	public Scene(Camera cam, Engine main) {
 		this.cam = cam;
 		this.main = main;
-		lights.add(new PointLight(0, 10, 0, new Vec3(1,1,1)));
+		lights.add(new PointLight(0, 10, -6.7, new Vec3(1,1,1)));
 	}
 	
 	/**

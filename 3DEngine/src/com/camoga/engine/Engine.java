@@ -2,8 +2,10 @@ package com.camoga.engine;
 
 import java.awt.BorderLayout;
 import java.awt.Canvas;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
@@ -131,7 +133,7 @@ public abstract class Engine extends Canvas implements Runnable {
 		faceID = 0;
 		for(int i = 0; i < pixels.length; i++) {
 			pixels[i] = screen.pixels[i];
-//			pixels[i] = (int) (screen.depthBuffer[i]*255f)*0x10101;
+//			pixels[i] = (int) (screen.depthBuffer[i]*100f)*0x10101;
 //			pixels[i] = (int) (screen.faceIDbuffer[i]==null? 0:screen.faceIDbuffer[i]/6400.0f*0xffffff);
 		}
 		g.drawImage(image, 0, 0, (int)DIMENSION.getWidth(), (int)DIMENSION.getHeight(), null);
@@ -176,9 +178,9 @@ public abstract class Engine extends Canvas implements Runnable {
 			if(apparentSize < 2) apparentSize = 2;
 			screen.drawPoint(pos[i], (int)apparentSize, color);
 			
-//			Graphics2D g2d = image2.createGraphics();
-//			g2d.setColor(new Color(0xff, 0xff, 0xff, 0xff));
-//			g2d.drawString(""+i, (int)pos[i].x, (int)pos[i].y);
+			Graphics2D g2d = image2.createGraphics();
+			g2d.setColor(new Color(0xff, 0xff, 0xff, 0xff));
+			g2d.drawString(""+i, (int)pos[i].x, (int)pos[i].y);
 		
 		}
 	}
@@ -240,7 +242,7 @@ public abstract class Engine extends Canvas implements Runnable {
 				new Vec3[] {new Vec3(vertices[faces[i][0]]), new Vec3(vertices[faces[i][j+1]]), new Vec3(vertices[faces[i][j+2]])}, 
 				new Point2D(textureCoords[texIndex]), new Point2D(textureCoords[texIndex+1+j]), new Point2D(textureCoords[texIndex+2+j]), 
 				normal, sprite, vertexColor[faces[i][0]],vertexColor[faces[i][j+1]],vertexColor[faces[i][j+2]],
-				faceID, Mouse.face != null && faceID==Mouse.face, true, mat);				
+				faceID, Mouse.face != null && faceID==Mouse.face, true, mat, false);				
 			}
 			texIndex+=faces[i].length;
 			faceID++;

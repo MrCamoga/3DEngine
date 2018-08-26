@@ -66,7 +66,7 @@ public class Model implements Renderable {
 	
 	public void render(Engine main) {
 		if(textureCoords != null) {
-//			main.renderPoint(transform, 20, 0xffff0000);
+			main.renderPoint(transform, 20, 0xffff0000);
 //			main.renderPolygons(transform, faces, textureCoords, normals, sprite, mat);
 			main.renderPolygons(transform, faces, textureCoords, normal, sprite, vertexColor, mat);
 		}

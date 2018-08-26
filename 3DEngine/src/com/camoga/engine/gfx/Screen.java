@@ -161,7 +161,7 @@ public class Screen {
 	 * @param ct third texture coord
 	 * @return whether or not the triangle has been drawn
 	 */
-	public boolean fillTriangle(Vec3[] vs, Vec3[] vw, Point2D at, Point2D bt, Point2D ct, Sprite normalmap, Sprite texturemap, Vec3 ac, Vec3 bc, Vec3 cc, int faceID, boolean highlight, boolean lighting, Material mat) {
+	public boolean fillTriangle(Vec3[] vs, Vec3[] vw, Point2D at, Point2D bt, Point2D ct, Sprite normalmap, Sprite texturemap, Vec3 ac, Vec3 bc, Vec3 cc, int faceID, boolean highlight, boolean lighting, Material mat, boolean PERSP_CORRECT) {
 		int xmin = min(vs[0].x,vs[1].x,vs[2].x);
 		int ymin = min(vs[0].y,vs[1].y,vs[2].y);
 		int xmax = max(vs[0].x,vs[1].x,vs[2].x);
@@ -177,6 +177,19 @@ public class Screen {
 		double area = edgeFunction(vs[0], vs[1], vs[2]);
 		boolean yInside = false;
 		
+		if(PERSP_CORRECT) {
+			if(at != null) {
+				at.div(vs[0].z);
+				bt.div(vs[1].z);
+				ct.div(vs[2].z);				
+			}
+			if(ac != null) {
+				ac.div(vs[0].z);
+				bc.div(vs[1].z);
+				cc.div(vs[2].z);				
+			}
+		}
+		
 		//Normal mapping vectors
 		Matrix normalMatrix = null;
 		if(normalmap != null && lighting) normalMatrix = normalMatrix(vw, at, bt, ct);
@@ -188,7 +201,7 @@ public class Screen {
 				double w0 = edgeFunction(new Vec3(x,y,0), vs[1], vs[2]);
 				double w1 = edgeFunction(new Vec3(x,y,0), vs[2], vs[0]);
 				double w2 = area - w0 - w1;
-				if(w0>=0&&w1>=0&&w2>=0 || w0<=0&&w1<=0&&w2<=0) {
+				if(w0<=0&&w1<=0&&w2<=0) {
 					xInside = true;
 					if(x==xmin) yInside = true;
 					if(x >= width || y >= height) continue;
@@ -201,7 +214,12 @@ public class Screen {
 										
 					//FIXME Perspective correct interpolation
 					//Interpolate depth
-					float z = (float)(w0*vs[0].z+w1*vs[1].z+w2*vs[2].z);
+					float z = 0;
+					if(PERSP_CORRECT) {
+						z = 1/(float)(w0/vs[0].z+w1/vs[1].z+w2/vs[2].z);
+					} else {
+						z = (float)(w0*vs[0].z+w1*vs[1].z+w2*vs[2].z);
+					}
 					//Interpolate texture coordinates
 					double u = 0, v = 0;
 					if(texturemap != null || (normalmap != null && lighting)) {
@@ -214,26 +232,44 @@ public class Screen {
 					int col = 0;
 					
 					if(texturemap != null) {
-						int xT = (int) (u*texturemap.width);
-						int yT = (int) (v*texturemap.height);
-						col = texturemap.getPixels()[(xT+yT*texturemap.width)];						
+						double xT = u*texturemap.width;
+						double yT = v*texturemap.height;
+						
+						if(PERSP_CORRECT) {
+							xT *= z;
+							yT *= z;
+						}
+//						if(xT+yT*texturemap.width >= 0 && xT+yT*texturemap.width < texturemap.getPixels().length)
+						col = texturemap.getPixels()[((int)xT+(int)yT*texturemap.width)];						
 					} else {
 						double r = (w0*ac.x + w1*bc.x + w2*cc.x);
 						double g = (w0*ac.y + w1*bc.y + w2*cc.y);
 						double b = (w0*ac.z + w1*bc.z + w2*cc.z);
+						
+						if(PERSP_CORRECT) {
+							r *= z;
+							g *= z;
+							b *= z;
+						}
 					
 						col = (int)(r*0xff) << 16 | (int)(g*0xff) << 8 | (int)(b*0xff);
 					}
 					//Shading
 					if(lighting) {
 						if(normalmap != null) {
-							int xN = (int) (u*normalmap.width);
-							int yN = (int) (v*normalmap.height);
-							Vec3 normal = getNormal(normalmap.getPixels()[(xN+yN*texturemap.width)]);
+							double xN = u*normalmap.width;
+							double yN = v*normalmap.height;
+							
+							if(PERSP_CORRECT) {
+								xN *= z;
+								yN *= z;
+							}
+							
+							Vec3 normal = getNormal(normalmap.getPixels()[((int)xN+(int)yN*texturemap.width)]);
 							normal = normalMatrix.multiply(normal);
 							Itotal = flatShading(normal, Vec3.mul(vw[0], w0).add(Vec3.mul(vw[1], w1)).add(Vec3.mul(vw[2], w2)), mat);
 						} else {
-							Itotal = flatShading(vw[0],vw[1],vw[2], mat);												
+							Itotal = flatShading(vw[0],vw[1],vw[2], mat);
 						}
 					}
 					

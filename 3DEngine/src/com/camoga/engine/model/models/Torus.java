@@ -57,6 +57,12 @@ public class Torus extends Model {
 		for(int i = 0; i < shortNum; i++) {
 			for(int j = 0; j < longNum; j++) {
 				fac[j+i*longNum] = new int[] {(j%longNum+i*longNum)%(longNum*shortNum),(j%longNum+(i+1)*longNum)%(longNum*shortNum),((j+1)%longNum+(i+1)*longNum)%(longNum*shortNum),((j+1)%longNum+i*longNum)%(longNum*shortNum)};
+				if(i == 0 && j == 0) {
+					for(int k = 0; k < 4; k++) {
+						System.out.println(fac[0][k]);
+					}
+				}
+				
 			}
 		}
 		

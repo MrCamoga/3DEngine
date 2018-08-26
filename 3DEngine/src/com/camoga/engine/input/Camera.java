@@ -19,8 +19,8 @@ public class Camera {
 	 */
 	public Camera(Key input) {
 		this.input = input;
-		pos = new Vec3(0,0,-15);
-		rot = new Vec3(0,0,0);
+		pos = new Vec3(0,0,-3.6);
+		rot = new Vec3(0.71,-0.66,0);
 	}
 
 	//TODO Euler angles
