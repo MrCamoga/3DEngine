@@ -19,6 +19,12 @@ public class Vec4d {
 		this.w0 = w0;
 	}
 	
+	public void set(double x, double y, double z) {
+		this.x = x;
+		this.y = y;
+		this.z = z;
+	}
+	
 //	public Vec4d add(double magnitud, double angle) {
 //		x += magnitud*Math.cos(angle);
 //		z += magnitud*Math.sin(angle);

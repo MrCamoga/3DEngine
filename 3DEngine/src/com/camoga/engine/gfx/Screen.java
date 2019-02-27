@@ -14,12 +14,16 @@ import com.camoga.engine.model.Material;
 public class Screen {
 	
 	public int width, height;
-	
+
 	private static final int ALPHA = 0xffff00ff;
+	private static int BACKGROUND = 0xffffffff;
 	
 	public int[] pixels;
 	public float[] depthBuffer;
 	public Integer[] faceIDbuffer;
+
+	public static int LINE_NUM = 0;
+	public static int TRIANGLE_NUM = 0;
 	
 	public Screen(int width, int height) {
 		this.width = width;
@@ -34,8 +38,8 @@ public class Screen {
 	 * clears pixel array to be drawn again
 	 */
 	public void clear() {
-		background(0xff30c4ff);
-		Arrays.fill(depthBuffer, Float.MAX_VALUE);
+		background(BACKGROUND);
+		Arrays.fill(depthBuffer, 255.0f);
 		Arrays.fill(faceIDbuffer, null);
 	}
 	
@@ -69,14 +73,15 @@ public class Screen {
 				int i = xa+ya*width;
 				float zBuff = zFunct(vs.z);
 				if(depthBuffer[i] > zBuff) {
-					pixels[i] = color;
+					pixels[i] = alphablending(pixels[i],color);
 					depthBuffer[i]= zBuff;
 				}
 			}
 		}
 	}
 	
-	//TODO INTERPOLATE DEPTH
+	//FIXME perspective correct interpolation
+	//TODO Add antialiasing
 	/**
 	 * Draws a line between two points
 	 * @param a first point
@@ -93,6 +98,7 @@ public class Screen {
 		if(xmin >= width || ymin >= height || xmax < 0 || ymax < 0) {
 			return;
 		}
+		LINE_NUM++;
 		if(xmin < 0) xmin = 0;
 		if(xmax >= width) xmax = width;
 		if(ymin < 0) ymin = 0;
@@ -106,26 +112,33 @@ public class Screen {
 //			b = c;
 //		}
 		
-		double x, y, dx, dy, step;
+		double x, y, z, dx, dy, dz, step;
 		
 		dx = (b.x-a.x);
 		dy = (b.y-a.y);
+		dz = (b.z-a.z);
 		
 		if(Math.abs(dx) >= Math.abs(dy)) step = Math.abs(dx);
 		else step = Math.abs(dy);
 		
 		dx /= step;
 		dy /= step;
+		dz /= step;
 		
 		x = a.x;
 		y = a.y;
-		for(int i = 1; i <= step; i++) {
-			if(!((int)x < 0 || (int)y < 0 || (int)x >= this.width || (int)y >= this.height)) { 
-				pixels[(int)x+(int)y*this.width] = color;
-				depthBuffer[(int)x+(int)y*this.width] = 0;
+		z = a.z;
+		for(int i = 0; i <= step; i++) {
+			if(!((int)x < 0 || (int)y < 0 || (int)x >= this.width || (int)y >= this.height)) {
+				int index = (int)x+(int)y*this.width;
+				if(depthBuffer[index] > z) {					
+					pixels[index] = alphablending(pixels[index], color);
+					depthBuffer[index] = (float) z;
+				}
 			}
 			x += dx; 
 			y += dy;
+			z += dz;
 //				i += step > 0 ? 1:-1;
 		}
 		
@@ -169,6 +182,7 @@ public class Screen {
 		
 		//Clip triangle
 		if(xmin >= width || ymin >= height || xmax < 0 || ymax < 0) return false;
+		TRIANGLE_NUM++;
 		if(xmin < 0) xmin = 0;
 		if(xmax >= width) xmax = width;
 		if(ymin < 0) ymin = 0;
@@ -194,25 +208,38 @@ public class Screen {
 		Matrix normalMatrix = null;
 		if(normalmap != null && lighting) normalMatrix = normalMatrix(vw, at, bt, ct);
 		
-		yLabel:for(int y = ymin; y <= ymax; y++) {
+		double pixelstep = 1;
+		
+		double w0stepx = (vs[2].y-vs[1].y)*pixelstep/area;
+		double w1stepx = (vs[0].y-vs[2].y)*pixelstep/area;
+		double w0stepy = (vs[1].x-vs[2].x)*pixelstep/area;
+		double w1stepy = (vs[2].x-vs[0].x)*pixelstep/area;
+		double w0start = edgeFunction(new Vec3(xmin,ymin,0), vs[1], vs[2])/area;
+		double w1start = edgeFunction(new Vec3(xmin,ymin,0), vs[2], vs[0])/area;
+		
+		//TODO Antialiasing
+		yLabel:for(int y = ymin; y <= ymax; y+=pixelstep) {
 			boolean xInside = false;
-			for(int x = xmin; x <= xmax; x++) {
+			double w0_ = w0start;
+			double w1_ = w1start;
+			for(int x = xmin; x <= xmax; x+=pixelstep) {
 				//Compute weights
-				double w0 = edgeFunction(new Vec3(x,y,0), vs[1], vs[2]);
-				double w1 = edgeFunction(new Vec3(x,y,0), vs[2], vs[0]);
-				double w2 = area - w0 - w1;
-				if(w0<=0&&w1<=0&&w2<=0) {
+				double w0 = w0_;
+				double w1 = w1_;
+				double w2 = 1 - w0 - w1;
+				w0_ += w0stepx;
+				w1_ += w1stepx;
+				if(w0<=0&&w1<=0&&w2<=0 || (w0>=0&&w1>=0&&w2>=0&&true)) {
 					xInside = true;
 					if(x==xmin) yInside = true;
 					if(x >= width || y >= height) continue;
 					//normalize the areas
-					w0 /= area;
-					w1 /= area;
-					w2 /= area;
+//					w0 /= area;
+//					w1 /= area;
+//					w2 /= area;
 					
 					double Itotal = 0;
 										
-					//FIXME Perspective correct interpolation
 					//Interpolate depth
 					float z = 0;
 					if(PERSP_CORRECT) {
@@ -220,65 +247,71 @@ public class Screen {
 					} else {
 						z = (float)(w0*vs[0].z+w1*vs[1].z+w2*vs[2].z);
 					}
-					//Interpolate texture coordinates
-					double u = 0, v = 0;
-					if(texturemap != null || (normalmap != null && lighting)) {
-						u = at.x*w0 + bt.x*w1 + ct.x*w2;
-						v = at.y*w0 + bt.y*w1 + ct.y*w2;
-					}
-					//FIXME texture coordinate cannot be 1
-					if(u < 0 || v < 0 || u >= 1 || v >= 1) continue;
+					
 
-					int col = 0;
-					
-					if(texturemap != null) {
-						double xT = u*texturemap.width;
-						double yT = v*texturemap.height;
-						
-						if(PERSP_CORRECT) {
-							xT *= z;
-							yT *= z;
-						}
-//						if(xT+yT*texturemap.width >= 0 && xT+yT*texturemap.width < texturemap.getPixels().length)
-						col = texturemap.getPixels()[((int)xT+(int)yT*texturemap.width)];						
-					} else {
-						double r = (w0*ac.x + w1*bc.x + w2*cc.x);
-						double g = (w0*ac.y + w1*bc.y + w2*cc.y);
-						double b = (w0*ac.z + w1*bc.z + w2*cc.z);
-						
-						if(PERSP_CORRECT) {
-							r *= z;
-							g *= z;
-							b *= z;
-						}
-					
-						col = (int)(r*0xff) << 16 | (int)(g*0xff) << 8 | (int)(b*0xff);
-					}
-					//Shading
-					if(lighting) {
-						if(normalmap != null) {
-							double xN = u*normalmap.width;
-							double yN = v*normalmap.height;
-							
-							if(PERSP_CORRECT) {
-								xN *= z;
-								yN *= z;
-							}
-							
-							Vec3 normal = getNormal(normalmap.getPixels()[((int)xN+(int)yN*texturemap.width)]);
-							normal = normalMatrix.multiply(normal);
-							Itotal = flatShading(normal, Vec3.mul(vw[0], w0).add(Vec3.mul(vw[1], w1)).add(Vec3.mul(vw[2], w2)), mat);
-						} else {
-							Itotal = flatShading(vw[0],vw[1],vw[2], mat);
-						}
-					}
-					
 					//pixels array index
 					int i = x+y*width;
 					
 					float zBuff = zFunct(z);
-					if(col != ALPHA)
 					if(depthBuffer[i] > zBuff) {
+					
+						//Interpolate texture coordinates
+						double u = 0, v = 0;
+						if(texturemap != null || (normalmap != null && lighting)) {
+							u = at.x*w0 + bt.x*w1 + ct.x*w2;
+							v = at.y*w0 + bt.y*w1 + ct.y*w2;
+						}
+						//FIXME texture coordinate cannot be 1
+	//					if(u < 0 || v < 0 || u >= 1 || v >= 1) continue;
+	
+						int col = 0xff000000;
+						
+						//Texture | Color
+						if(texturemap != null) {
+							double xT = u*texturemap.width;
+							double yT = v*texturemap.height;
+							
+							if(PERSP_CORRECT) {
+								xT *= z;
+								yT *= z;
+							}
+	//						if(xT+yT*texturemap.width >= 0 && xT+yT*texturemap.width < texturemap.getPixels().length)
+	//						System.out.println(xT + ", " + yT + ": " + texturemap.height);
+							if(xT >= texturemap.width || yT >= texturemap.height) continue;
+							col = texturemap.getPixels()[((int)xT+(int)yT*texturemap.width)];						
+						} else {
+							double r = (w0*ac.x + w1*bc.x + w2*cc.x);
+							double g = (w0*ac.y + w1*bc.y + w2*cc.y);
+							double b = (w0*ac.z + w1*bc.z + w2*cc.z);
+							
+							if(PERSP_CORRECT) {
+								r *= z;
+								g *= z;
+								b *= z;
+							}
+						
+							col = 0xff<<24 | (int)(r*0xff) << 16 | (int)(g*0xff) << 8 | (int)(b*0xff);
+						}
+						//Shading
+						if(lighting) {
+							if(normalmap != null) {
+								double xN = u*normalmap.width;
+								double yN = v*normalmap.height;
+								
+								if(PERSP_CORRECT) {
+									xN *= z;
+									yN *= z;
+								}
+								
+								Vec3 normal = getNormal(normalmap.getPixels()[((int)xN+(int)yN*texturemap.width)]);
+								normal = normalMatrix.multiply(normal);
+								Itotal = flatShading(normal, Vec3.mul(vw[0], w0).add(Vec3.mul(vw[1], w1)).add(Vec3.mul(vw[2], w2)), mat);
+							} else {
+								Itotal = flatShading(vw[0],vw[1],vw[2], mat);
+							}
+						}
+						
+						if(col != ALPHA)
 						if(lighting) {
 							float[] hsl = Color.RGBtoHSL(col);
 //							System.out.println(hsl[1]);
@@ -290,21 +323,27 @@ public class Screen {
 								hsl[2] += .16f;
 							}
 							if(hsl[2]>1)hsl[2]=1;
-							pixels[i] = Color.HSLtoRGB(hsl[0], hsl[1], hsl[2]);							
+							pixels[i] = alphablending(pixels[i],Color.HSLtoRGB(hsl[0], hsl[1], hsl[2]));							
 						} else {
-							pixels[i] = col;
+							pixels[i] = alphablending(pixels[i], col);
 						}
 						depthBuffer[i] = zBuff;
 						faceIDbuffer[i] = faceID;
 					}
 				} 
 				//Backtrack traversal
-				else if(xInside) continue yLabel;
+				else if(xInside) {
+					break;
+				}
 				else if(x==xmin && yInside) {
 					yInside = false;
+					w0start += w0stepx;
+					w1start += w1stepx;
 					xmin++;
 				}
 			}
+			w0start += w0stepy;
+			w1start += w1stepy;
 		}
 		return true;
 	}
@@ -319,7 +358,6 @@ public class Screen {
 		return (float) z;
 	}
 
-	//DONE triangles with different lightning?
 	/**
 	 * Returns light intensity value for a triangle
 	 * @param a triangle's first vertex
@@ -359,7 +397,7 @@ public class Screen {
 			
 			Vec3 Rm = (normal.mul(dot*2)).sub(light);
 			double dot2 = Vec3.dotNorm(Rm,Vec3.sub(Engine.cam.pos,pos));
-			double Ispec = dot2 < 0 ? 0:Ks*Math.pow(dot2,mat.alpha);
+			double Ispec = dot2 < 0 ? 0:Ks*Math.pow(dot2,mat.alpha*8);
 			if(Idiff < 0) Idiff = 0;
 			if(Ispec < 0) Ispec = 0;
 			Itotal += I*(Idiff+Ispec);
@@ -388,12 +426,16 @@ public class Screen {
 		return new Matrix(T, B, N);
 	}
 	
-	//DONE SPHERE AND TORUS MODEL
-	//FIXME
+	//TODO Add gamma correction
 	public int alphablending(int color1, int color2) {
-		float factor = (float)((color2&0xff000000) >> 24)/255f;
-		int r = (int) ((color1&0xff0000 >> 16)*(1-factor) + (color2&0xff0000 >> 16)*factor);
-		int g = (int) ((color1&0xff00 >> 8)*(1-factor) + (color2&0xff00 >> 8)*factor);
+
+		float factor = ((color2&0xff000000L) >> 24)/255.0f;
+//		factor = 0.5f;
+		if(factor == 1) {
+			return color2;
+		}
+		int r = (int) (((color1&0xff0000) >> 16)*(1-factor) + ((color2&0xff0000) >> 16)*factor);
+		int g = (int) (((color1&0xff00) >> 8)*(1-factor) + ((color2&0xff00) >> 8)*factor);
 		int b = (int) ((color1&0xff)*(1-factor) + (color2&0xff)*factor);
 		return (r<<16)|(g<<8)|b;
 	}

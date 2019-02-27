@@ -1,7 +1,7 @@
-package com.camoga.mg.complexplane.grapher.functions;
+package com.camoga.examples.complexplane.grapher.functions;
 
 import com.camoga.complex.Complex;
-import com.camoga.mg.complexplane.grapher.IFunction;
+import com.camoga.examples.complexplane.grapher.IFunction;
 
 public class Mandelbrot implements IFunction {
 

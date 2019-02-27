@@ -12,6 +12,6 @@ public class DirectionalLight extends LightSource {
 	
 	@Override
 	public void render(Engine main) {
-		super.render(main);
+//		super.render(main);
 	}
 }

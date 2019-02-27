@@ -1,6 +1,8 @@
 package com.camoga._4d.examples;
 
+import java.awt.Font;
 import java.awt.Graphics;
+import java.util.Arrays;
 
 import com.camoga._4d.geom.MatrixNd;
 import com.camoga._4d.geom.VecNd;
@@ -15,12 +17,12 @@ import com.camoga.engine.input.Key;
 /**
  * This is an example of a program made using this motor.
  * The objective of this little program is to optimize the three dimensional shadow
- * of an hypercube using the shadow theorem.
+ * of an 4D-Cube using the shadow theorem.
  * You can get more information here: <a href="https://www.youtube.com/watch?v=cEhLNS5AHss">Mathologer's Video</a>
  * 
  * Most of the code in here can be used to manipulate even higher dimensional polytopes.
  * However, I've still haven't been able to find a way of calculating the area/volume of a projection; 
- * so it cannot optimize the volume of a 5-brick, 6-brick, and so on.
+ * so it cannot optimize the volume of a 5-cube, 6-cube, and so on yet.
  * 
  * 
  * @author MrCamoga
@@ -31,8 +33,6 @@ public class TestHighDim extends Engine {
 	private static final long serialVersionUID = 1L;
 	Polytope tesseract;
 	Sprite sprite;
-	
-	//DONE method to create planes of rotation
 	
 	//Dimension
 	public int N = 4;
@@ -45,12 +45,12 @@ public class TestHighDim extends Engine {
 		
 //		cam = new Camera4d(key);
 		
-		tesseract = new NCube(4, 25, 1, 0xffff0000);
+		tesseract = new NCube(N, 25, 1, 0xffff0000);
 //		tesseract = new NSphere(null, null, null, 5, 1, 0xffff0000);
 		
 	}
 
-	private double lambda = 0.01;
+	private double lambda = 0.001;
 	
 	boolean optimize = false;
 	
@@ -61,13 +61,26 @@ public class TestHighDim extends Engine {
 		if(input.L) planes[1] += 0.01;
 		if(input.H) planes[2] += 0.01;
 		if(input.N) planes[2] -= 0.01;
+		
+		if(input.T) {
+			for(int i = 0; i < planes.length; i++) {
+				planes[i] = Math.random()*2*Math.PI;
+			}
+		}
 	}
+	
+	public int presstime = 0;
 	
 	@Override
 	public void tick(double dt) {
 		super.tick(dt);
+		System.out.println(Arrays.toString(planes));
 		this.key(super.key);
-		if(key.ENTER) optimize = !optimize;
+		if(key.ENTER && presstime < 0) {
+			optimize = !optimize;
+			presstime = 10;
+		}
+		presstime--;
 		if(optimize)
 		for(int j = 0; j < 3; j++) {
 			
@@ -218,6 +231,9 @@ public class TestHighDim extends Engine {
 
 	@Override
 	public void postdraw(Graphics g) {
-		
+		if(optimize) {
+			g.setFont(new Font("Arial", Font.BOLD, 30));
+			g.drawString("Optimizing...", 300, 100);
+		}
 	}
 }

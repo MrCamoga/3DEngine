@@ -1,4 +1,4 @@
-package com.camoga.mg.complexplane.grapher;
+package com.camoga.examples.complexplane.grapher;
 import com.camoga.complex.Complex;
 import com.camoga.engine.geom.Vec3;
 import com.camoga.engine.gfx.Color;

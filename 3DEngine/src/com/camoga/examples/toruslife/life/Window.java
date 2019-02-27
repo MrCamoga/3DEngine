@@ -1,4 +1,4 @@
-package com.camoga.mg.toruslife.life;
+package com.camoga.examples.toruslife.life;
 
 import java.awt.Canvas;
 import java.awt.Dimension;

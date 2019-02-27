@@ -13,7 +13,6 @@ public class Cylinder extends Model {
 				scale, normal, sprite, mat);
 	}
 	
-	//TODO add top and bottom
 	private static double[][] vertices(int longNum, double R, double h) {
 		double[][] vert = new double[longNum*2][];
 		
@@ -31,7 +30,7 @@ public class Cylinder extends Model {
 	}
 	
 	private static double[][] quadTexCoords(int longNum) {
-		double[][] textureCoords = new double[longNum*4][];
+		double[][] textureCoords = new double[longNum*4+longNum*2][];
 		for(int j = 0; j < longNum; j++) {
 //			System.out.println(j+","+longNum);
 			textureCoords[4*j] = new double[] {(double)j/(longNum),0};
@@ -39,18 +38,30 @@ public class Cylinder extends Model {
 			textureCoords[4*j+2] = new double[] {(double)j/longNum,1};
 			textureCoords[4*j+3] = new double[] {((double)(j+1))/longNum,1};
 		}
+		for(int j = 0; j < longNum; j++) {
+			textureCoords[4*longNum+j] = new double[] {(double)j/longNum, 1};
+
+			textureCoords[5*longNum+j] = new double[] {(double)j/longNum, 0};
+		}
 		return textureCoords;
 	}
 	
 	private static int[][] faces(int longNum) {
-		int[][] fac = new int[longNum][];
+		int[][] fac = new int[longNum+2][];
 		
 		for(int j = 0; j < longNum; j++) {
 			fac[j] = new int[] {
 				j,(j+1)%longNum,(j+1)%longNum+longNum,j+longNum
 			};
 		}
-		
+		fac[longNum] = new int[longNum];
+		for(int j = 0; j < longNum; j++) {
+			fac[longNum][j] = longNum-j-1;
+		}
+		fac[longNum+1] = new int[longNum];
+		for(int j = 0; j < longNum; j++) {
+			fac[longNum+1][j] = longNum + j;
+		}
 		return fac;
 	}
 }

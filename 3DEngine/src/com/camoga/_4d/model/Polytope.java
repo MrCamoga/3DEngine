@@ -55,10 +55,10 @@ public class Polytope implements Renderable {
 	
 	public void render(Engine main) {
 		main.renderPoint(transform4d, dotSize, color);
-		if(faces!=null)
-		main.renderPolygons(transform4d, faces, textureCoords, null, sprite, vertexColor, mat);
+//		if(faces!=null)
+//		main.renderPolygons(transform4d, faces, textureCoords, null, sprite, vertexColor, mat);
 		if(edges!=null)
-		main.renderHollowModel(transform4d, edges, 20, color);
+		main.renderWireframe(transform4d, edges, 20, color);
 	}
 
 	public void transform(Matrix rotation, Scene scene) {

@@ -24,7 +24,7 @@ public class NSphere extends Polytope {
 			double theta1 = random()*2*PI;
 //			theta0 += 0.03;
 //			theta1 += 0.02;
-			theta2 = Math.random()>0.5 ? 0:0.5;
+//			theta2 = Math.random()>0.5 ? 0:0.5;
 			vert[i] = new double[] {sin(theta0),cos(theta0)*sin(theta1),cos(theta0)*cos(theta1)*sin(theta2),cos(theta0)*cos(theta1)*cos(theta2)};
 		}
 		return vert;

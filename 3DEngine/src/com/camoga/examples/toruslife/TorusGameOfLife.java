@@ -1,4 +1,4 @@
-package com.camoga.mg.toruslife;
+package com.camoga.examples.toruslife;
 
 import java.awt.Graphics;
 
@@ -8,7 +8,7 @@ import com.camoga.engine.gfx.Screen;
 import com.camoga.engine.gfx.Sprite;
 import com.camoga.engine.model.Material;
 import com.camoga.engine.model.models.Torus;
-import com.camoga.mg.toruslife.life.GameOfLife;
+import com.camoga.examples.toruslife.life.GameOfLife;
 
 /**
  * This is the most simple program that you may do.

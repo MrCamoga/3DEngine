@@ -12,7 +12,7 @@ public class NCube extends Polytope {
 				NdimCubeTC(N), 
 				dotSize, scale, color, Material.brick);
 		this.N = N;
-	}	
+	}
 	
 	/**
 	 * 

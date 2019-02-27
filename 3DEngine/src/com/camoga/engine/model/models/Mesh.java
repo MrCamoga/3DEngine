@@ -39,7 +39,7 @@ public class Mesh extends Model {
 		int[][] faces = new int[(width-1)*(height-1)][];
 		for(int i = 0; i < height-1; i++) {
 			for(int j = 0; j < width-1; j++) {
-				faces[j+i*(width-1)] = new int[]{j+i*width,j+(i+1)*width,j+(i+1)*width+1,j+1+i*width};
+				faces[j+i*(width-1)] = new int[]{j+i*width,j+1+i*width,j+(i+1)*width+1,j+(i+1)*width};
 			}
 		}
 		return faces;

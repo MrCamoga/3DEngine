@@ -1,4 +1,4 @@
-package com.camoga.mg.toruslife.life;
+package com.camoga.examples.toruslife.life;
 
 /**
  * Level is cyclic like if it were the surface of a torus

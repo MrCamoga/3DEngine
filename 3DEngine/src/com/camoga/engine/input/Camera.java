@@ -4,6 +4,7 @@ import java.awt.Graphics;
 
 import com.camoga.engine.Engine;
 import com.camoga.engine.geom.Vec3;
+import com.camoga.engine.gfx.Screen;
 
 public class Camera {
 
@@ -11,7 +12,8 @@ public class Camera {
 	
 	public Vec3 pos;
 	public Vec3 rot;
-	public double speed = .1;
+	public double speed = 0.1;
+	public double omega = .01;
 	
 	/**
 	 * Creates a camera object
@@ -19,8 +21,8 @@ public class Camera {
 	 */
 	public Camera(Key input) {
 		this.input = input;
-		pos = new Vec3(0,0,-3.6);
-		rot = new Vec3(0.71,-0.66,0);
+		pos = new Vec3(0,0,-20);
+		rot = new Vec3(0,0,0);
 	}
 
 	//TODO Euler angles
@@ -28,6 +30,8 @@ public class Camera {
 	 * Moves and rotates the camera
 	 */
 	public void tick() {
+//		speed = 0.01;
+//		angle = 0.001;
 		if(input.up) pos.y+=speed;
 		if(input.down) pos.y-=speed;
 		if(input.left) pos.x-=speed;
@@ -35,12 +39,12 @@ public class Camera {
 		if(input.out) pos.z-=speed;
 		if(input.in) pos.z+=speed;
 		
-		if(input.W) rot.x-=0.01;
-		if(input.S) rot.x+=0.01;
-		if(input.Q) rot.z+=0.01;
-		if(input.E) rot.z-=0.01;
-		if(input.A) rot.y-=0.01;
-		if(input.D) rot.y+=0.01;
+		if(input.W) rot.x-=omega;
+		if(input.S) rot.x+=omega;
+		if(input.Q) rot.z+=omega;
+		if(input.E) rot.z-=omega;
+		if(input.A) rot.y-=omega;
+		if(input.D) rot.y+=omega;
 
 		if(input.I) Engine.scene.getLights().get(0).pos.z += 0.1;
 		if(input.K) Engine.scene.getLights().get(0).pos.z -= 0.1;
@@ -73,6 +77,7 @@ public class Camera {
 			g.drawString("Light source y: " +  Engine.scene.getLights().get(0).pos.y, xo+10, yo+122);
 			g.drawString("Light source z: " +  Engine.scene.getLights().get(0).pos.z, xo+10, yo+137);			
 		}
+		g.drawString("Num of lines: " + Screen.LINE_NUM, xo+10, yo+152);
 	}
 	
 	/**

@@ -1,4 +1,4 @@
-package com.camoga.mg;
+package com.camoga.examples;
 
 import java.awt.Graphics;
 

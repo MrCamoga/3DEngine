@@ -7,7 +7,7 @@ public class Matrix {
 	public double matrix[][];
 	
 	public Matrix(double[][] matrix) {
-		this.matrix = matrix;
+		this.matrix = matrix.clone();
 	}
 	
 	public Matrix(Vec3 A, Vec3 B, Vec3 C) {
@@ -23,11 +23,9 @@ public class Matrix {
 	}
 	
 	public Vec3 multiply(Vec3 v) {
-		double[][] m = multiply(new double[][] {
-			{v.x},{v.y},{v.z}
-		}).matrix;
-		
-		return new Vec3(m[0][0], m[1][0], m[2][0]);
+		return new Vec3(matrix[0][0]*v.x+matrix[0][1]*v.y+matrix[0][2]*v.z,
+				matrix[1][0]*v.x+matrix[1][1]*v.y+matrix[1][2]*v.z, 
+				matrix[2][0]*v.x+matrix[2][1]*v.y+matrix[2][2]*v.z);
 	}
 	
 	public Vec4d multiply(Vec4d vec4) {

@@ -12,6 +12,15 @@ public class MatrixNd {
 		this.matrix = matrix;
 	}
 	
+	public MatrixNd(VecNd[] v) {
+		matrix = new double[v[0].dim()][v.length];
+		for(int i = 0; i < matrix.length; i++) {
+			for(int j = 0; j < matrix[i].length; j++) {
+				matrix[i][j] = v[j].xs[i];
+			}
+		}
+	}
+	
 	/**
 	 * 
 	 * @param m matrix

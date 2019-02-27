@@ -35,6 +35,7 @@ public class Key implements KeyListener {
 	public boolean K;
 	public boolean L;
 	public boolean N;
+	public boolean T;
 	public boolean ENTER;
 	
 	/**
@@ -61,6 +62,8 @@ public class Key implements KeyListener {
 		K = keys[KeyEvent.VK_K];
 		L = keys[KeyEvent.VK_L];
 		N = keys[KeyEvent.VK_N];
+		
+		T = keys[KeyEvent.VK_T];
 		
 		ENTER = keys[KeyEvent.VK_ENTER];
 	}

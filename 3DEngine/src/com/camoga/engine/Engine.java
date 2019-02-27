@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferStrategy;
@@ -54,9 +55,12 @@ public abstract class Engine extends Canvas implements Runnable {
 	public static Scene scene;
 	public Screen screen;
 	
+	public static boolean lighting = true;
+	
 	//TODO create Window class
-	public Engine() {
-		frame = new JFrame(TITLE);
+	public Engine(String title) {
+		frame = new JFrame(title);
+		this.TITLE = title;
 		
 		frame.setSize(DIMENSION);
 		frame.setVisible(true);
@@ -71,6 +75,10 @@ public abstract class Engine extends Canvas implements Runnable {
 		cam = new Camera(key);
 		scene = new Scene(cam, this);
 		screen = new Screen(WIDTH, HEIGHT);
+	}
+	
+	public Engine() {
+		this(TITLE);
 	}
 	
 	public void run() {
@@ -89,6 +97,7 @@ public abstract class Engine extends Canvas implements Runnable {
 			delta += (now-last)/ns;
 			last = now;
 			
+			//TODO separate transformations tick from program tick
 			while(delta >= 1) {
 				tick(1.0/UPS);
 				ticks++;
@@ -115,7 +124,6 @@ public abstract class Engine extends Canvas implements Runnable {
 		mouse.tick();
 		cam.tick();
 		scene.tick();
-		FOCAL = 700/SCALE;
 	}
 	
 	public void render() {
@@ -126,25 +134,39 @@ public abstract class Engine extends Canvas implements Runnable {
 		}
 		
 		Graphics g = buffer.getDrawGraphics();
-		
+//		g.setFont(new Font("", 3, 3));
 		screen.clear();
 		predraw(screen);
 		scene.render(g);
 		faceID = 0;
+		float min = Float.MAX_VALUE;
+		float max = 0;
+		for(float f : screen.depthBuffer) {
+			if(f < min) min = f;
+			else if(f > max && f != 255.0) max = f;
+		}
+//		System.out.println(max);
 		for(int i = 0; i < pixels.length; i++) {
 			pixels[i] = screen.pixels[i];
-//			pixels[i] = (int) (screen.depthBuffer[i]*100f)*0x10101;
+//			if(screen.depthBuffer[i] == 255.0) pixels[i] = 0;
+//			else pixels[i] = (int) (1-(screen.depthBuffer[i]-min)/(max-min)*255)*0x10101;
 //			pixels[i] = (int) (screen.faceIDbuffer[i]==null? 0:screen.faceIDbuffer[i]/6400.0f*0xffffff);
 		}
 		g.drawImage(image, 0, 0, (int)DIMENSION.getWidth(), (int)DIMENSION.getHeight(), null);
 		g.drawImage(image2, 0, 0, (int)DIMENSION.getWidth(), (int)DIMENSION.getHeight(),null);
+		cam.render(g,0,0);
 		postdraw(g);
 		
-		cam.render(g,0,0);
 
 		g.dispose();
 		image2 = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
 		buffer.show();
+		screen.LINE_NUM = 0;
+		screen.TRIANGLE_NUM = 0;
+	}
+	
+	public void setFocalLength(int focal) {
+		FOCAL = focal;
 	}
 	
 	/**
@@ -178,9 +200,9 @@ public abstract class Engine extends Canvas implements Runnable {
 			if(apparentSize < 2) apparentSize = 2;
 			screen.drawPoint(pos[i], (int)apparentSize, color);
 			
-			Graphics2D g2d = image2.createGraphics();
-			g2d.setColor(new Color(0xff, 0xff, 0xff, 0xff));
-			g2d.drawString(""+i, (int)pos[i].x, (int)pos[i].y);
+//			Graphics2D g2d = image2.createGraphics();
+//			g2d.setColor(new Color(0xff, 0xff, 0xff, 0xff));
+//			g2d.drawString(""+i, (int)pos[i].x, (int)pos[i].y);
 		
 		}
 	}
@@ -192,7 +214,7 @@ public abstract class Engine extends Canvas implements Runnable {
 	 * @param lineSize edge thickness
 	 * @param color edge color
 	 */
-	public void renderHollowModel(Vec4d[] vertices, int[][] edges, double lineSize, int color) {
+	public void renderWireframe(Vec4d[] vertices, int[][] edges, double lineSize, int color) {
 		Vec3[] pos = worldToScreen(vertices);
 		for(int i = 0; i < edges.length; i++) {
 			boolean draw = true;

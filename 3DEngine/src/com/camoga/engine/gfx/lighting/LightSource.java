@@ -17,7 +17,6 @@ public abstract class LightSource {
 	private Vec3 colorIntensity;
 	
 	//TODO implement colored light and light intensity
-	//DONE Add point light
 	public LightSource(double x, double y, double z, double dx, double dy, double dz, Vec3 I, LightType type) {
 		rot = new Vec3(dx, dy, dz);
 		pos = new Vec4d(x,y,z);

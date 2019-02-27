@@ -17,6 +17,12 @@ public class Vec3 {
 		y = v4.y;
 		z = v4.z;
 	}
+	
+	public Vec3(Vec3 v) {
+		x = v.x;
+		y = v.y;
+		z = v.z;
+	}
 	public Vec3(int[] pos) {
 		this(pos[0], pos[1], pos[2]);
 	}
