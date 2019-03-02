@@ -22,10 +22,16 @@ public class Matrix {
 		return multiply(m.matrix);
 	}
 	
-	public Vec3 multiply(Vec3 v) {
+	public Vec3 multVec(Vec3 v) {
 		return new Vec3(matrix[0][0]*v.x+matrix[0][1]*v.y+matrix[0][2]*v.z,
 				matrix[1][0]*v.x+matrix[1][1]*v.y+matrix[1][2]*v.z, 
 				matrix[2][0]*v.x+matrix[2][1]*v.y+matrix[2][2]*v.z);
+	}
+	
+	public Vec3 vecMult(Vec3 v) {
+		return new Vec3(matrix[0][0]*v.x+matrix[1][0]*v.y+matrix[2][0]*v.z,
+				matrix[0][1]*v.x+matrix[1][1]*v.y+matrix[2][1]*v.z,
+				matrix[0][2]*v.x+matrix[1][2]*v.y+matrix[2][2]*v.z);
 	}
 	
 	public Vec4d multiply(Vec4d vec4) {
@@ -46,6 +52,16 @@ public class Matrix {
 				for(int j = 0; j < matrix[0].length; j++) {
 					result[y][x] += matrix[y][j]*m[j][x];
 				}
+			}
+		}
+		return new Matrix(result);
+	}
+	
+	public Matrix transpose() {
+		double[][] result = new double[matrix[0].length][matrix.length];
+		for(int i = 0; i < result.length; i++) {
+			for(int j = 0; j < result[i].length; j++) {
+				result[i][j] = matrix[j][i];
 			}
 		}
 		return new Matrix(result);

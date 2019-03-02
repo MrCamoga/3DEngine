@@ -304,7 +304,7 @@ public class Screen {
 								}
 								
 								Vec3 normal = getNormal(normalmap.getPixels()[((int)xN+(int)yN*texturemap.width)]);
-								normal = normalMatrix.multiply(normal);
+								normal = normalMatrix.multVec(normal);
 								Itotal = flatShading(normal, Vec3.mul(vw[0], w0).add(Vec3.mul(vw[1], w1)).add(Vec3.mul(vw[2], w2)), mat);
 							} else {
 								Itotal = flatShading(vw[0],vw[1],vw[2], mat);

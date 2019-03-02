@@ -164,6 +164,7 @@ public class Plotter extends Engine {
 								{Double.parseDouble(txt[1][0].getText()),Double.parseDouble(txt[1][1].getText()),Double.parseDouble(txt[1][2].getText())},
 								{Double.parseDouble(txt[2][0].getText()),Double.parseDouble(txt[2][1].getText()),Double.parseDouble(txt[2][2].getText())}
 							});
+							
 						}
 					}
 				});
@@ -265,7 +266,7 @@ public class Plotter extends Engine {
 					
 					Vec3 pos = new Vec3(x_,y_,z_);
 					
-					Vec3 pos_ = Plast.multiply(pos).mul(1-t).add(P.multiply(pos).mul(t));
+					Vec3 pos_ = Plast.multVec(pos).mul(1-t).add(P.multVec(pos).mul(t));
 					x = pos_.x;
 					y = pos_.y;
 					z = pos_.z;
@@ -284,68 +285,125 @@ public class Plotter extends Engine {
 	}
 	
 	public double bilinear(double x1, double y1, double z1, double x2, double y2, double z2) {
-		return 0.5*(quadraticform(x1+x2, y1+y2, z1+z2)-quadraticform(x1, y1, z1)-quadraticform(z2, y2, z2));
+		return 0.5*(quadraticform(x1+x2, y1+y2, z1+z2)-quadraticform(x1, y1, z1)-quadraticform(x2, y2, z2));
 	}
 	
-	public void orthogonalize() {
-//		double A = c[1]*c[2]-0.5*c[5];
-//		double B = 0.5*c[3]*c[2]-0.25*c[5]*c[4];
-//		double C = 0.25*c[3]*c[5]-0.5*c[1]*c[5];
-//		double determinant = c[0]*A-0.5*c[3]*B+0.5*c[4]*C;
-//		double rank = 3;
-//		if(determinant == 0) {
-//			if(A==0 && B == 0 && C == 0) rank = 1;
-//			else rank = 2;
-//		}
+	public Vec3[] orthogonalize() {
+		double a_ = c[1]*c[2]-0.5*c[5];
+		double b_ = 0.5*c[3]*c[2]-0.25*c[5]*c[4];
+		double c_ = 0.25*c[3]*c[5]-0.5*c[1]*c[5];
+		double determinant = c[0]*a_-0.5*c[3]*b_+0.5*c[4]*c_;
+		double rank = 3;
+		if(determinant == 0) {
+			if(a_==0 && b_ == 0 && c_ == 0) rank = 1;
+			else rank = 2;
+		}
 //		
-//		Vec3 v1,v2,v3;
-//		double q1,q2,q3;
-//		if(c[0] != 0) v1 = new Vec3(1,0,0);
-//		else if(c[1] != 0) v1 = new Vec3(0,1,0);
-//		else if(c[2] != 0) v1 = new Vec3(0,0,1);
-//		else {
-//			double x,y,z;
-//			do {
-//				x = Math.random();
-//				y = Math.random();
-//				z = Math.random();
-//			}
-//			while(quadraticform(x,y,z) == 0 && (x == 0 && y == 0 && z == 0));
-//			v1 = new Vec3(x,y,z);
-//			q1 = quadraticform(x,y,z);
-//		}
+		Vec3 v1,v2 = null,v3 = null;
+		double q1 = 0,q2 = 0,q3 = 0;
+		if(c[0] != 0) {
+			v1 = new Vec3(1,0,0);
+			q1 = c[0];
+		}
+		else if(c[1] != 0) {
+			v1 = new Vec3(0,1,0);
+			q1 = c[1];
+		} else if(c[2] != 0) {
+			v1 = new Vec3(0,0,1);
+			q1 = c[2];
+		}
 		
-//		Vec3 u1 = new Vec3(1,0,0), u2 = new Vec3(0, 1, 0), u3 = new Vec3(0,0,1);
-//		Vec3 v1, v2,v3;
-//		v1 = new Vec3(u1);
-//		v2 = new Vec3(u2).sub(v1.mul(bilinear(u2.x, u2.y, u2.z, v1.x, v1.y, v1.z)).div(Math.pow(quadraticform(v1.x, v1.y, v1.z),0.5)));
-//		v3 = new Vec3(u3).sub(v2.mul(bilinear(u3.x, u3.y, u3.z, v2.x, v2.y, v2.z)).div(Math.pow(quadraticform(v2.x, v2.y, v2.z),0.5))).sub(v1.mul(bilinear(u3.x, u3.y, u3.z, v1.x, v1.y, v1.z)).div(Math.pow(quadraticform(v1.x, v1.y, v1.z),0.5)));;
-		double[][] ev = PCA.eigenvectors(new double[][] {
+		else {
+			double x,y,z;
+			do {
+				x = Math.random();
+				y = Math.random();
+				z = Math.random();
+			}
+			while(quadraticform(x,y,z) == 0 && (x == 0 && y == 0 && z == 0));
+			v1 = new Vec3(x,y,z);
+			q1 = quadraticform(x,y,z);
+		}
+		
+		Matrix A = new Matrix(new double[][] {
 			{c[0],0.5*c[3],0.5*c[4]},
 			{0.5*c[3],c[1],0.5*c[5]},
-			{0.5*c[4],0.5*c[5],0.5*c[2]}
+			{0.5*c[4],0.5*c[5],c[2]}
 		});
 
-		Vec3 v1 = new Vec3(ev[0]);
-		Vec3 v2 = new Vec3(ev[1]);
-		Vec3 v3 = new Vec3(ev[2]);
-		double q1 = quadraticform(v1.x, v1.y, v1.z);
-		double q2 = quadraticform(v2.x, v2.y, v2.z);
-		double q3 = quadraticform(v3.x, v3.y, v3.z);
-		if(q1 != 0)
-		v1.div(Math.sqrt(Math.abs(q1)));
-		if(q2 != 0)
-		v2.div(Math.sqrt(Math.abs(q2)));
-		if(q3 != 0)
-		v3.div(Math.sqrt(Math.abs(q3)));
+		Vec3 v1t = A.vecMult(v1);
+		//V1T
+		Vec3 k11, k12;
+		if(v1t.x == 0) {
+			k11 = new Vec3(1,0,0);
+			if(v1t.y == 0) k12 = new Vec3(0,1,0);
+			else k12 = new Vec3(0,-v1t.z/v1t.y,1);
+		} else if(v1t.y == 0) {
+			k11 = new Vec3(0,1,0);
+			if(v1t.z == 0) k12 = new Vec3(0,0,1);
+			else k12 = new Vec3(-v1t.z/v1t.x,0,1);
+		} else if(v1t.z == 0){
+			k11 = new Vec3(0,0,1);
+			k12 = new Vec3(-v1t.y/v1t.x,1,0);
+		} else {
+			k11 = new Vec3(-v1t.y/v1t.x,1,0);
+			k12 = new Vec3(-v1t.z/v1t.x,0,1);
+		}
+		
+		double q = 0;
+		boolean allisotropes = false;
+		if((q = quadraticform(k11.x, k11.y, k11.z)) != 0) {
+			v2 = k11;
+			q2 = q;
+		} else if((q = quadraticform(k12.x, k12.y, k12.z)) != 0) {
+			v2 = k12;
+			q2 = q;
+		} else if(rank==1){
+			
+			v2 = k11;
+			v3 = k12;
+			q2 = 0;
+			q3 = 0;
+		} else {
+			allisotropes = true;
+		}
+		while(allisotropes) {
+			Vec3 v = k11.mul(Math.random()).add(k12.mul(Math.random()));
+			if((q = quadraticform(v.x, v.y, v.z)) != 0) {
+				v2 = v;
+				q2 = q;
+				System.out.println(v2+", " + q2);
+				allisotropes = false;
+			}
+		}
+		
+		if(v3 == null) {
+			Vec3 v2t = A.vecMult(v2);
+			double a = v2t.x*k11.x+v2t.y*k11.y+v2t.z*k11.z;
+			double b = v2t.x*k12.x+v2t.y*k12.y+v2t.z*k12.z;
+			
+			double k2 = 1;
+			double k1 = -b/a;
+			
+			v3 = k11.mul(k1).add(k12.mul(k2));
+			q3 = quadraticform(v3.x, v3.y, v3.z);
+		}
+		
+		if(q1 != 0) v1.div(Math.sqrt(Math.abs(q1)));
+		if(q2 != 0) v2.div(Math.sqrt(Math.abs(q2)));
+		if(q3 != 0) v3.div(Math.sqrt(Math.abs(q3)));
+
+//		System.out.println(bilinear(v1.x, v1.y, v1.z, v2.x, v2.y, v2.z));
+//		System.out.println(bilinear(v1.x, v1.y, v1.z, v3.x, v3.y, v3.z));
+//		System.out.println(bilinear(v3.x, v3.y, v3.z, v2.x, v2.y, v2.z));
+//		System.out.println(v1.mod());
+//		System.out.println(v2.mod());
+//		System.out.println(v3.mod());
 		t = 0;
 		animatechangebasis = true;
-		P = new Matrix(new double[][] {
-			{v1.x,v1.y,v1.z},
-			{v2.x,v2.y,v2.z},
-			{v3.x,v3.y,v3.z},
-		});
-		
+		P = new Matrix(v1,v2,v3);
+		System.out.println(Arrays.deepToString(P.transpose().multiply(A).multiply(P).matrix));
+		return null;
 	}
 	
 	public void tick(double dt) {
@@ -357,7 +415,7 @@ public class Plotter extends Engine {
 			System.out.println("Animate " + t);
 			if(t <= 1) {
 				plot(c);
-				t+=0.02;
+				t+=0.2;
 			} else {
 				t = 0;
 				animatechangebasis = false;
