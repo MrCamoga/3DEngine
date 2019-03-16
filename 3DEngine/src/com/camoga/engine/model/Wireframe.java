@@ -52,6 +52,11 @@ public class Wireframe implements Renderable {
 		transform.add(new Vec4d(x,y,z));
 	}
 	
+	public void clear() {
+		vertices.clear();
+		transform.clear();
+	}
+	
 	public void addEdge(int a, int b) {
 		edges.add(new int[] {a,b});
 	}

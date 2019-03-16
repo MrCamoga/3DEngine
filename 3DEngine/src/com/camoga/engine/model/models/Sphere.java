@@ -13,6 +13,7 @@ import com.camoga.engine.model.Model;
 
 public class Sphere extends Model {
 
+	//TODO sphere wireframe
 	/**
 	 * Create a sphere
 	 * @param R radius
