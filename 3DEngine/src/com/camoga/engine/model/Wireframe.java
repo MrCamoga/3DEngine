@@ -1,6 +1,7 @@
 package com.camoga.engine.model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import com.camoga.engine.Engine;
 import com.camoga.engine.Renderable;
@@ -54,10 +55,14 @@ public class Wireframe implements Renderable {
 	
 	public void clear() {
 		vertices.clear();
+		edges.clear();
 		transform.clear();
 	}
 	
 	public void addEdge(int a, int b) {
+		for(int[] edge : edges) {
+			if((edge[0] == a && edge[1] == b) || (edge[1] == a && edge[0] == b)) return;
+		}
 		edges.add(new int[] {a,b});
 	}
 	

@@ -12,11 +12,16 @@ public class Point {
 	}
 	
 	public void move(double dt) {
-		this.accel.sub(Vec3.mul(vel, vel.mod()*PointsArrangement.VISCOUSFRICTION));
+		this.accel.sub(Vec3.mul(vel, vel.mod()*PointsArrangement.VISCOUSFRICTION));			
 		vel.add(Vec3.mul(accel, dt));
 		pos.add(Vec3.mul(vel, dt));
 		accel = new Vec3();
 		pos.normalize();
+		if(Double.isNaN(Vec3.modSq(Vec3.add(vel, pos)))) {
+			System.out.println("NaN");
+			vel = new Vec3();
+			pos = new Vec3(2*Math.random()-1, 2*Math.random()-1, 2*Math.random()-1).normalize();
+		}
 	}
 	
 	public void repulse(Point p) {
