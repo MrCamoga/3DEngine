@@ -9,7 +9,6 @@ import com.camoga.engine.geom.Vec3;
 import com.camoga.engine.geom.Vec4d;
 import com.camoga.engine.gfx.lighting.DirectionalLight;
 import com.camoga.engine.gfx.lighting.LightSource;
-import com.camoga.engine.gfx.lighting.PointLight;
 import com.camoga.engine.input.Camera;
 import com.camoga.engine.input.Mouse;
 
@@ -32,7 +31,7 @@ public class Scene {
 	public Scene(Camera cam, Engine main) {
 		this.cam = cam;
 		this.main = main;
-		lights.add(new DirectionalLight(0, 0,-10, new Vec3(1,1,1)));
+//		lights.add(new DirectionalLight(0, 0,-10, new Vec3(1,1,1)));
 	}
 	
 	/**
@@ -62,7 +61,7 @@ public class Scene {
 	 * 
 	 */
 	public void tick() {
-		getLights().get(0).pos.set(Math.cos(Engine.time), 0, Math.sin(Engine.time));
+//		getLights().get(0).pos.set(Math.cos(Engine.time), 0, Math.sin(Engine.time));
 	}
 	
 	//TODO use TestHighDim.java methods

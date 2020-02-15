@@ -4,10 +4,7 @@ import java.awt.Graphics;
 
 import com.camoga.engine.Engine;
 import com.camoga.engine.gfx.Screen;
-import com.camoga.engine.gfx.Sprite;
-import com.camoga.engine.model.Material;
 import com.camoga.engine.model.Wireframe;
-import com.camoga.engine.model.models.Sphere;
 
 public class LorenzAttractor extends Engine {
 
@@ -15,7 +12,7 @@ public class LorenzAttractor extends Engine {
 	
 	public LorenzAttractor() {
 		super();
-		
+
 		cam.speed = 1;
 		cam.rot.y = 0.75;
 		cam.pos.z = -100;
@@ -40,7 +37,7 @@ public class LorenzAttractor extends Engine {
 //		cam.pos.z = 86*Math.cos(-angle);
 //		cam.pos.x = 86*Math.sin(-angle);
 		cam.rot.y = -angle+Math.PI;
-		for(int i = 0; i < 10; i++) {
+		for(int i = 0; i < 100; i++) {
 			double dt2 = 0.003;
 			
 			double dx = a*(y-x);

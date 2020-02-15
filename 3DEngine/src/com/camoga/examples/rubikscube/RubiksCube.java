@@ -6,9 +6,6 @@ import java.util.HashMap;
 import com.camoga.engine.Engine;
 import com.camoga.engine.geom.Vec3;
 import com.camoga.engine.gfx.Screen;
-import com.camoga.engine.gfx.Sprite;
-import com.camoga.engine.model.Material;
-import com.camoga.engine.model.Model;
 
 public class RubiksCube extends Engine {
 

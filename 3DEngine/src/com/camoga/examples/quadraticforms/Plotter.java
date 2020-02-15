@@ -26,7 +26,6 @@ import com.camoga.engine.geom.Vec3;
 import com.camoga.engine.gfx.Screen;
 import com.camoga.engine.model.Wireframe;
 import com.camoga.engine.model.models.CubeFrame;
-import com.camoga.examples.pca.PCA;
 
 public class Plotter extends Engine {
 

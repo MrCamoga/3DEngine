@@ -1,6 +1,7 @@
 package com.camoga.engine.geom;
 
-import static java.lang.Math.*;
+import static java.lang.Math.pow;
+import static java.lang.Math.sqrt;
 
 public class Point2D {
 

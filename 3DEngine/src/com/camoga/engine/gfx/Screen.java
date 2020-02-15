@@ -7,7 +7,6 @@ import com.camoga.engine.Scene;
 import com.camoga.engine.geom.Matrix;
 import com.camoga.engine.geom.Point2D;
 import com.camoga.engine.geom.Vec3;
-import com.camoga.engine.geom.Vec4d;
 import com.camoga.engine.gfx.lighting.LightSource;
 import com.camoga.engine.model.Material;
 
@@ -174,7 +173,11 @@ public class Screen {
 	 * @param ct third texture coord
 	 * @return whether or not the triangle has been drawn
 	 */
-	public boolean fillTriangle(Vec3[] vs, Vec3[] vw, Point2D at, Point2D bt, Point2D ct, Sprite normalmap, Sprite texturemap, Vec3 ac, Vec3 bc, Vec3 cc, int faceID, boolean highlight, boolean lighting, Material mat, boolean PERSP_CORRECT) {
+	public boolean fillTriangle(Vec3[] vs, Vec3[] vw,
+			Point2D at, Point2D bt, Point2D ct, 
+			Sprite normalmap, Sprite texturemap, 
+			Vec3 ac, Vec3 bc, Vec3 cc, 
+			int faceID, boolean highlight, boolean lighting, Material mat, boolean PERSP_CORRECT) {
 		int xmin = min(vs[0].x,vs[1].x,vs[2].x);
 		int ymin = min(vs[0].y,vs[1].y,vs[2].y);
 		int xmax = max(vs[0].x,vs[1].x,vs[2].x);

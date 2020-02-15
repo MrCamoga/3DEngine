@@ -2,11 +2,8 @@ package com.camoga.engine;
 
 import java.awt.BorderLayout;
 import java.awt.Canvas;
-import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
@@ -264,7 +261,7 @@ public abstract class Engine extends Canvas implements Runnable {
 				new Vec3[] {new Vec3(vertices[faces[i][0]]), new Vec3(vertices[faces[i][j+1]]), new Vec3(vertices[faces[i][j+2]])}, 
 				new Point2D(textureCoords[texIndex]), new Point2D(textureCoords[texIndex+1+j]), new Point2D(textureCoords[texIndex+2+j]), 
 				normal, sprite, vertexColor[faces[i][0]],vertexColor[faces[i][j+1]],vertexColor[faces[i][j+2]],
-				faceID, Mouse.face != null && faceID==Mouse.face, true, mat, false);				
+				faceID, Mouse.face != null && faceID==Mouse.face, true, mat, true);				
 			}
 			texIndex+=faces[i].length;
 			faceID++;

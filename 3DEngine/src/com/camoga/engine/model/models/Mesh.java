@@ -1,16 +1,16 @@
 package com.camoga.engine.model.models;
 
 import com.camoga.engine.geom.Vec3;
-import com.camoga.engine.gfx.Sprite;
 import com.camoga.engine.model.Material;
 import com.camoga.engine.model.Model;
 
 public class Mesh extends Model {
 
-	public Mesh(int width, int height, double scale, Material mat) {
+	public Mesh(int width, int height, double scale, Vec3 color, Material mat) {
 		super(meshVertices(width, height), meshFaces(width, height), meshText(width, height), scale, null, mat);
 		for(int i = 0; i < vertexColor.length; i++) {
-			vertexColor[i] = new Vec3(Math.random(), Math.random(), Math.random());
+//			vertexColor[i] = new Vec3(Math.random(), Math.random(), Math.random());
+			vertexColor[i] = color;
 		}
 	}
 	

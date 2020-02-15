@@ -4,9 +4,6 @@ import static java.lang.Math.PI;
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
 
-import java.awt.Graphics;
-
-import com.camoga.engine.Engine;
 import com.camoga.engine.gfx.Sprite;
 import com.camoga.engine.model.Material;
 import com.camoga.engine.model.Model;

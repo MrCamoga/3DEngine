@@ -1,5 +1,7 @@
 package com.camoga.engine.model.models;
 
+import java.util.Arrays;
+
 import com.camoga.engine.gfx.Sprite;
 import com.camoga.engine.model.Material;
 import com.camoga.engine.model.Model;
@@ -42,10 +44,10 @@ public class Torus extends Model {
 		for(int i = 0; i < shortNum; i++) {
 			for(int j = 0; j < longNum; j++) {
 				System.out.println(j+","+longNum);
-				textureCoords[4*(j+i*longNum)] = new double[] {(double)j/(longNum),(double)i/shortNum};
-				textureCoords[4*(j+i*longNum)+1] = new double[] {((double)(j+1))/longNum,(double)(i+1)/shortNum};
-				textureCoords[4*(j+i*longNum)+2] = new double[] {(double)j/longNum,(double)(i+1)/shortNum};
-				textureCoords[4*(j+i*longNum)+3] = new double[] {((double)(j+1))/longNum,(double)i/shortNum};
+				textureCoords[4*(j+i*longNum)+0] = new double[] {1-(double)j/(longNum),(double)i/shortNum};
+				textureCoords[4*(j+i*longNum)+2] = new double[] {1-((double)(j+1))/longNum,(double)(i+1)/shortNum};
+				textureCoords[4*(j+i*longNum)+1] = new double[] {1-(double)j/longNum,(double)(i+1)/shortNum};
+				textureCoords[4*(j+i*longNum)+3] = new double[] {1-((double)(j+1))/longNum,(double)i/shortNum};
 			}
 		}
 		return textureCoords;

@@ -6,7 +6,6 @@ import java.awt.Graphics;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
-import java.lang.management.GarbageCollectorMXBean;
 
 import javax.swing.JFrame;
 

@@ -3,7 +3,6 @@ package com.camoga.examples.toruslife;
 import java.awt.Graphics;
 
 import com.camoga.engine.Engine;
-import com.camoga.engine.geom.Vec3;
 import com.camoga.engine.gfx.Screen;
 import com.camoga.engine.gfx.Sprite;
 import com.camoga.engine.model.Material;
@@ -49,6 +48,8 @@ public class TorusGameOfLife extends Engine {
 
 	@Override
 	public void predraw(Screen screen) {
+
+		screen.background(0xff30ffc4);
 		torus.sprite.set(life.level.getImage(true,0xffffff));
 	}
 
